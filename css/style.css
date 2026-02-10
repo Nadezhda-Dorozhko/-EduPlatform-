@@ -1,0 +1,21 @@
+/* Сброс отступов */
+body {
+margin: 0;
+padding: 0;
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+}
+
+/* Заголовок */
+h1 {
+text-align: center;
+color: #333;
+margin-top: 60px;
+}
+
+/* Абзац */
+p {
+text-align: center;
+font-size: 18px;
+color: #666;
+}
