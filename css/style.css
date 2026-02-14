@@ -1,21 +1,31 @@
 /* Сброс отступов */
 body {
-margin: 0;
-padding: 0;
-font-family: Arial, sans-serif;
-background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #c9f0ff;
+  color: #000000;
+  font-size: 20px;
 }
 
 /* Заголовок */
 h1 {
-text-align: center;
-color: #333;
-margin-top: 60px;
+  text-align: center;
+  margin-top: 60px;
 }
 
 /* Абзац */
 p {
-text-align: center;
-font-size: 18px;
-color: #666;
+  text-align: center;
 }
+
+/* Блок из Figma */
+.block {
+  background-color: #a8c5f9;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  margin: 40px auto;
+  text-align: center;
+}
+/* image 10 */
