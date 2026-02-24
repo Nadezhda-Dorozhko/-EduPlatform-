@@ -3,24 +3,1199 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduPlatform</title>
-
-    <!-- Шрифт Montserrat -->
+    <meta
+      name="description"
+      content="[Описание вашего проекта согласно варианту]"
+    />
+    <title>[Название вашего проекта]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&family=Rubik:wght@900&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Подключение CSS -->
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <h1>Добро пожаловать на сайт EduPlatform!</h1>
 
-    <!-- Блок из Figma -->
-    <div class="block">Онлайн-курсы для вашего обучения</div>
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <!-- микроразметка Organization -->
+    <div
+      itemscope
+      itemtype="https://schema.org/Organization"
+      style="display: none"
+    >
+      <span itemprop="name">EduPlatform</span>
+      <span itemprop="description"
+        >Образовательная платформа онлайн-курсов</span
+      >
+      <a itemprop="url" href="/">academy.com</a>
+    </div>
 
-    <p>Это главная страница нашего сайта.</p>
+    <a href="#main" class="skip-link">Перейти к основному содержимому</a>
+
+    <!-- ================================================================
+       HEADER
+       ================================================================ -->
+    <header class="header" role="banner" itemprop="header">
+      <div class="header__container">
+        <div class="header__left">
+          <!-- logo -->
+          <a
+            href="/"
+            class="logo header__logo"
+            aria-label="EduPlatform — на главную страницу"
+          >
+            <span class="logo__icon" aria-hidden="true">
+              <svg
+                class="logo__svg"
+                width="31"
+                height="38"
+                viewBox="0 0 31 38"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                focusable="false"
+              >
+                <rect
+                  x="0.72"
+                  y="4"
+                  width="28.73"
+                  height="9.41"
+                  rx="2"
+                  fill="#9E5CF2"
+                />
+                <rect
+                  x="6.57"
+                  y="9.88"
+                  width="16.66"
+                  height="6.74"
+                  rx="2"
+                  fill="#9E5CF2"
+                />
+                <rect
+                  x="0"
+                  y="13.6"
+                  width="30.17"
+                  height="7.51"
+                  rx="2"
+                  fill="#9E5CF2"
+                />
+                <rect
+                  x="15.09"
+                  y="18.93"
+                  width="13.58"
+                  height="13.58"
+                  rx="3"
+                  fill="#9E5CF2"
+                />
+                <rect
+                  x="1.5"
+                  y="18.93"
+                  width="13.58"
+                  height="13.58"
+                  rx="3"
+                  fill="#9E5CF2"
+                />
+                <rect
+                  x="13"
+                  y="30.35"
+                  width="4.17"
+                  height="4.65"
+                  rx="1"
+                  fill="#9E5CF2"
+                />
+                <circle cx="5.18" cy="25.73" r="3.12" fill="#9E5CF2" />
+                <circle cx="18.76" cy="25.73" r="3.12" fill="#9E5CF2" />
+              </svg>
+            </span>
+            <span class="logo__text">EduPlatform</span>
+          </a>
+
+          <!-- nav -->
+          <nav class="nav header__nav" aria-label="Основная навигация">
+            <ul class="nav__list">
+              <li class="nav__item nav__item--dropdown">
+                <a href="/pages" class="nav__link">
+                  Pages
+                  <span class="nav__arrow" aria-hidden="true">&#xf107;</span>
+                </a>
+                <span class="nav__indicator" aria-hidden="true"></span>
+              </li>
+              <li class="nav__item">
+                <a href="/blog" class="nav__link">Blog</a>
+                <span class="nav__indicator" aria-hidden="true"></span>
+              </li>
+              <li class="nav__item">
+                <a href="/portfolio" class="nav__link">Portfolio</a>
+                <span class="nav__indicator" aria-hidden="true"></span>
+              </li>
+              <li class="nav__item">
+                <a href="/contact" class="nav__link">Contact</a>
+                <span class="nav__indicator" aria-hidden="true"></span>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!-- /header__left -->
+
+        <div class="header__right">
+          <!-- search -->
+          <div class="search header__search" role="search">
+            <label for="header-search" class="visually-hidden"
+              >Поиск по сайту</label
+            >
+            <input
+              type="search"
+              id="header-search"
+              class="search__input"
+              placeholder="Search anything"
+              autocomplete="off"
+            />
+            <span class="search__icon" aria-hidden="true">&#xf002;</span>
+          </div>
+
+          <div class="header__divider" aria-hidden="true"></div>
+
+          <!-- user -->
+          <div class="user header__user">
+            <figure class="user__avatar-wrap">
+              <img
+                src="images/avatar.jpg"
+                alt="Аватар пользователя Behzad Pashaei"
+                class="user__avatar"
+                width="64"
+                height="64"
+              />
+            </figure>
+            <div class="user__info">
+              <span class="user__name">Behzad Pashaei</span>
+              <span class="user__role">UI &amp; UX Designer</span>
+            </div>
+          </div>
+
+          <!-- notification -->
+          <button
+            type="button"
+            class="notification header__notification"
+            aria-label="Открыть уведомления"
+          >
+            <span class="notification__icon" aria-hidden="true">&#xf0f3;</span>
+          </button>
+        </div>
+        <!-- /header__right -->
+      </div>
+      <!-- /header__container -->
+    </header>
+
+    <!-- ================================================================
+       MAIN
+       ================================================================ -->
+    <main id="main" class="main" tabindex="-1" itemprop="mainContentOfPage">
+      <div class="main__container">
+        <!-- new-courses -->
+        <section
+          class="courses-section"
+          aria-labelledby="courses-section-title"
+        >
+          <!-- header секции: title + tabs + filter -->
+          <div class="courses-section__header">
+            <div class="section-title courses-section__title-group">
+              <span class="section-title__dot" aria-hidden="true"></span>
+              <h2 id="courses-section-title" class="section-title__text">
+                New Courses
+              </h2>
+            </div>
+
+            <nav
+              class="tabs courses-section__tabs"
+              aria-label="Фильтр курсов по категории"
+            >
+              <ul class="tabs__list" role="tablist">
+                <li class="tabs__item" role="presentation">
+                  <button
+                    class="tabs__btn tabs__btn--active"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="courses-grid"
+                    id="tab-all"
+                  >
+                    All Courses
+                  </button>
+                </li>
+                <li class="tabs__item" role="presentation">
+                  <button
+                    class="tabs__btn"
+                    role="tab"
+                    aria-selected="false"
+                    id="tab-design"
+                  >
+                    Design
+                  </button>
+                </li>
+                <li class="tabs__item" role="presentation">
+                  <button
+                    class="tabs__btn"
+                    role="tab"
+                    aria-selected="false"
+                    id="tab-dev"
+                  >
+                    Development
+                  </button>
+                </li>
+                <li class="tabs__item" role="presentation">
+                  <button
+                    class="tabs__btn"
+                    role="tab"
+                    aria-selected="false"
+                    id="tab-marketing"
+                  >
+                    Marketing
+                  </button>
+                </li>
+                <li class="tabs__item" role="presentation">
+                  <button
+                    class="tabs__btn"
+                    role="tab"
+                    aria-selected="false"
+                    id="tab-art"
+                  >
+                    Art
+                  </button>
+                </li>
+              </ul>
+            </nav>
+
+            <button
+              class="filter-btn courses-section__filter"
+              type="button"
+              aria-label="Дополнительные фильтры"
+            >
+              <span class="filter-btn__icon" aria-hidden="true">&#xf0b0;</span>
+            </button>
+          </div>
+          <!-- /courses-section__header -->
+
+          <!-- grid карточек -->
+          <div
+            class="courses-section__grid"
+            id="courses-grid"
+            role="tabpanel"
+            aria-labelledby="tab-all"
+          >
+            <!-- card 1 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-1-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-1.jpg"
+                  alt="Студент изучает UX-дизайн за ноутбуком"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-1-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Introduction to UX Design
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Научитесь проектировать удобные интерфейсы с нуля. Figma, исследования пользователей, прототипирование."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 6</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 3h 20m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 48</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/ux-design" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 2 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-2-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-2.jpg"
+                  alt="Образовательные материалы — курс по педагогике"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-2-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Learning &amp; Education Fundamentals
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Основы педагогики и онлайн-обучения. Как эффективно учиться и передавать знания другим."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 8</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 4h 10m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 62</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a
+                    href="/courses/learning-education"
+                    class="course-card__btn"
+                  >
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 3 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-3-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-3.jpg"
+                  alt="Код на экране — курс по веб-разработке"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-3-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Web Development: HTML &amp; CSS
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Создавайте сайты с нуля. HTML, CSS, адаптивная вёрстка и основы JavaScript."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 12</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 6h 40m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 34</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/web-development" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 4 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-4-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-4.jpg"
+                  alt="Дашборд аналитики — курс по цифровому маркетингу"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-4-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Digital Marketing Strategy
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="SEO, таргетинг, контент-маркетинг и аналитика. Полный курс по digital-маркетингу."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 9</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 5h 00m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 55</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/digital-marketing" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 5 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-5-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-5.jpg"
+                  alt="Фотокамера — курс по фотографии для начинающих"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-5-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Photography for Beginners
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Основы фотографии: композиция, свет, настройки камеры и обработка фото."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 10</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 4h 30m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 71</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/photography" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 6 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-6-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-6.jpg"
+                  alt="Женщина работает за ноутбуком дома — курс по удалённой работе"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-6-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Remote Work &amp; Productivity
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Как эффективно работать удалённо: инструменты, тайм-менеджмент и организация рабочего дня."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 7</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 3h 50m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 43</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/remote-work" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 7 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-7-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-7.jpg"
+                  alt="Цветовые палитры — курс по графическому дизайну"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-7-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Graphic Design Essentials
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="Adobe Illustrator, Photoshop и основы визуального дизайна для начинающих."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 11</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 5h 15m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 59</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/graphic-design" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 8 -->
+            <article
+              class="course-card"
+              itemscope
+              itemtype="https://schema.org/Course"
+              aria-labelledby="course-8-title"
+            >
+              <figure class="course-card__media">
+                <img
+                  src="images/course-8.jpg"
+                  alt="Деловая встреча — курс по предпринимательству"
+                  class="course-card__img"
+                  width="340"
+                  height="240"
+                  loading="lazy"
+                />
+              </figure>
+              <div class="course-card__body">
+                <meta itemprop="provider" content="EduPlatform" />
+
+                <h3
+                  id="course-8-title"
+                  class="course-card__title"
+                  itemprop="name"
+                >
+                  Entrepreneurship &amp; Business
+                </h3>
+                <meta
+                  itemprop="description"
+                  content="От идеи до бизнеса: бизнес-планирование, маркетинг, финансы и управление командой."
+                />
+                <ul class="course-card__meta" aria-label="Детали курса">
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf02d;</span
+                    >
+                    <span class="course-card__meta-text">Lesson: 14</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf017;</span
+                    >
+                    <span class="course-card__meta-text">Duration: 7h 00m</span>
+                  </li>
+                  <li class="course-card__meta-item">
+                    <span class="course-card__meta-icon" aria-hidden="true"
+                      >&#xf007;</span
+                    >
+                    <span class="course-card__meta-text">Students: 88</span>
+                  </li>
+                </ul>
+                <div class="course-card__footer">
+                  <a href="/courses/entrepreneurship" class="course-card__btn">
+                    Start Now
+                    <span class="course-card__btn-icon" aria-hidden="true"
+                      >&#xf061;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+          <!-- /courses-section__grid -->
+        </section>
+        <!-- /courses-section -->
+      </div>
+      <!-- /main__container -->
+    </main>
+
+    <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+    <footer
+      class="footer"
+      itemscope
+      itemtype="https://schema.org/WPFooter"
+      itemprop="footer"
+    >
+      <div class="footer__container">
+        <!-- footer__top: explanation + logo -->
+        <div class="footer__top">
+          <div class="footer__explanation">
+            <p class="footer__explanation-text">
+              EduPlatform — это онлайн-платформа для тех, кто хочет учиться у
+              лучших. Мы собрали курсы по дизайну, разработке, маркетингу и
+              бизнесу. Учитесь в своём темпе и получайте сертификаты.
+            </p>
+          </div>
+
+          <div class="footer__logo-wrap">
+            <a
+              href="/"
+              class="logo footer__logo"
+              aria-label="EduPlatform — на главную страницу"
+            >
+              <span class="logo__icon" aria-hidden="true">
+                <svg
+                  class="logo__svg"
+                  width="31"
+                  height="38"
+                  viewBox="0 0 31 38"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  focusable="false"
+                >
+                  <rect
+                    x="0.72"
+                    y="4"
+                    width="28.73"
+                    height="9.41"
+                    rx="2"
+                    fill="#9E5CF2"
+                  />
+                  <rect
+                    x="6.57"
+                    y="9.88"
+                    width="16.66"
+                    height="6.74"
+                    rx="2"
+                    fill="#9E5CF2"
+                  />
+                  <rect
+                    x="0"
+                    y="13.6"
+                    width="30.17"
+                    height="7.51"
+                    rx="2"
+                    fill="#9E5CF2"
+                  />
+                  <rect
+                    x="15.09"
+                    y="18.93"
+                    width="13.58"
+                    height="13.58"
+                    rx="3"
+                    fill="#9E5CF2"
+                  />
+                  <rect
+                    x="1.5"
+                    y="18.93"
+                    width="13.58"
+                    height="13.58"
+                    rx="3"
+                    fill="#9E5CF2"
+                  />
+                  <rect
+                    x="13"
+                    y="30.35"
+                    width="4.17"
+                    height="4.65"
+                    rx="1"
+                    fill="#9E5CF2"
+                  />
+                  <circle cx="5.18" cy="25.73" r="3.12" fill="#9E5CF2" />
+                  <circle cx="18.76" cy="25.73" r="3.12" fill="#9E5CF2" />
+                </svg>
+              </span>
+              <span class="logo__text">EduPlatform</span>
+            </a>
+          </div>
+        </div>
+        <!-- /footer__top -->
+
+        <!-- footer__center: certificate | categories | quick-access | new-comments -->
+        <div class="footer__center">
+          <!-- certificate -->
+          <section
+            class="footer-cert footer__col footer__col--cert"
+            aria-labelledby="footer-cert-title"
+          >
+            <h3 id="footer-cert-title" class="footer-cert__title">
+              Certificate
+            </h3>
+            <figure class="footer-cert__figure">
+              <svg
+                class="footer-cert__svg"
+                viewBox="0 0 468 320"
+                width="468"
+                height="320"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Сертификат EduPlatform"
+                role="img"
+              >
+                <!-- фон -->
+                <rect width="468" height="320" rx="12" fill="#ffffff" />
+                <rect
+                  width="468"
+                  height="320"
+                  rx="12"
+                  fill="none"
+                  stroke="#F1F1F1"
+                  stroke-width="2"
+                />
+                <!-- жёлтые векторные фигуры (декор) -->
+                <rect
+                  x="0"
+                  y="0"
+                  width="8"
+                  height="160"
+                  rx="4"
+                  fill="#FEDD40"
+                  transform="rotate(90 80 40)"
+                />
+                <rect
+                  x="20"
+                  y="58"
+                  width="420"
+                  height="8"
+                  rx="4"
+                  fill="#FEDD40"
+                  opacity="0.4"
+                />
+                <!-- звезда-декор -->
+                <circle cx="60" cy="160" r="36" fill="#FEDD40" opacity="0.15" />
+                <circle cx="60" cy="160" r="24" fill="#FEDD40" opacity="0.25" />
+                <!-- текст сертификата -->
+                <text
+                  x="234"
+                  y="90"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="11"
+                  font-weight="500"
+                  fill="rgba(62,50,50,0.5)"
+                  letter-spacing="3"
+                >
+                  CERTIFICATE OF COMPLETION
+                </text>
+                <text
+                  x="234"
+                  y="140"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="22"
+                  font-weight="700"
+                  fill="#3E3232"
+                >
+                  This certifies that
+                </text>
+                <text
+                  x="234"
+                  y="178"
+                  text-anchor="middle"
+                  font-family="Rubik, sans-serif"
+                  font-size="28"
+                  font-weight="900"
+                  fill="#9E5CF2"
+                >
+                  Behzad Pashaei
+                </text>
+                <line
+                  x1="100"
+                  y1="192"
+                  x2="368"
+                  y2="192"
+                  stroke="#F1F1F1"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="234"
+                  y="220"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="13"
+                  font-weight="400"
+                  fill="rgba(62,50,50,0.75)"
+                >
+                  has successfully completed the course
+                </text>
+                <text
+                  x="234"
+                  y="250"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="16"
+                  font-weight="600"
+                  fill="#080808"
+                >
+                  UI/UX Design: от новичка до профессионала
+                </text>
+                <!-- подписи -->
+                <line
+                  x1="80"
+                  y1="295"
+                  x2="190"
+                  y2="295"
+                  stroke="#E6E6E6"
+                  stroke-width="1"
+                />
+                <line
+                  x1="278"
+                  y1="295"
+                  x2="388"
+                  y2="295"
+                  stroke="#E6E6E6"
+                  stroke-width="1"
+                />
+                <text
+                  x="135"
+                  y="310"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="10"
+                  fill="rgba(62,50,50,0.5)"
+                >
+                  EduPlatform
+                </text>
+                <text
+                  x="333"
+                  y="310"
+                  text-anchor="middle"
+                  font-family="Roboto, sans-serif"
+                  font-size="10"
+                  fill="rgba(62,50,50,0.5)"
+                >
+                  Instructor
+                </text>
+              </svg>
+            </figure>
+          </section>
+
+          <!-- categories -->
+          <nav
+            class="footer-nav footer__col footer__col--categories"
+            aria-label="Категории курсов"
+          >
+            <h3 class="footer-nav__title">Categories</h3>
+            <ul class="footer-nav__list">
+              <li class="footer-nav__item">
+                <a href="/courses/design" class="footer-nav__link">Design</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/courses/development" class="footer-nav__link"
+                  >Development</a
+                >
+              </li>
+              <li class="footer-nav__item">
+                <a href="/courses/marketing" class="footer-nav__link"
+                  >Marketing</a
+                >
+              </li>
+              <li class="footer-nav__item">
+                <a href="/courses/business" class="footer-nav__link"
+                  >Business</a
+                >
+              </li>
+              <li class="footer-nav__item">
+                <a href="/courses/art" class="footer-nav__link">Art</a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- quick-access -->
+          <nav
+            class="footer-nav footer__col footer__col--quicklinks"
+            aria-label="Быстрый доступ"
+          >
+            <h3 class="footer-nav__title">Quick Access</h3>
+            <ul class="footer-nav__list">
+              <li class="footer-nav__item">
+                <a href="/" class="footer-nav__link">Home</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/courses" class="footer-nav__link">Courses</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/instructors" class="footer-nav__link">Instructors</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/blog" class="footer-nav__link">Blog</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/about" class="footer-nav__link">About</a>
+              </li>
+              <li class="footer-nav__item">
+                <a href="/contact" class="footer-nav__link">Contact</a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- new-comments -->
+          <section
+            class="footer__col footer__col--comments"
+            aria-labelledby="footer-comments-title"
+          >
+            <h3 id="footer-comments-title" class="footer-nav__title">
+              New Comments
+            </h3>
+            <article class="footer-comment">
+              <div class="footer-comment__meta">
+                <span class="footer-comment__name">ellsmartx</span>
+                <time class="footer-comment__date" datetime="2025-01-20"
+                  >20 Jan 2025</time
+                >
+              </div>
+              <p class="footer-comment__text">
+                how nice does this look 😍 I feel it should be delicious, thank
+                you.
+              </p>
+            </article>
+
+            <article class="footer-comment">
+              <div class="footer-comment__meta">
+                <span class="footer-comment__name">cassia</span>
+                <time class="footer-comment__date" datetime="2025-01-18"
+                  >18 Jan 2025</time
+                >
+              </div>
+              <p class="footer-comment__text">
+                Take a rest, i'll be cheer up you again in 2 next game go go go.
+              </p>
+            </article>
+
+            <article class="footer-comment">
+              <div class="footer-comment__meta">
+                <span class="footer-comment__name">amanda</span>
+                <time class="footer-comment__date" datetime="2025-01-15"
+                  >15 Jan 2025</time
+                >
+              </div>
+              <p class="footer-comment__text">
+                you were stunning today, jan! 💗 great match 👍🏽👍🏽
+              </p>
+            </article>
+
+            <article class="footer-comment">
+              <div class="footer-comment__meta">
+                <span class="footer-comment__name">Denis Simonassi</span>
+                <time class="footer-comment__date" datetime="2025-01-12"
+                  >12 Jan 2025</time
+                >
+              </div>
+              <p class="footer-comment__text">
+                It was a great match today Janzi! You did
+                great&#x1F609;&#x1F1E9;&#x1F1EA;
+              </p>
+            </article>
+          </section>
+        </div>
+        <!-- /footer__center -->
+
+        <!-- footer__bottom -->
+        <div class="footer__bottom">
+          <div class="footer__bottom-inner">
+            <!-- privacy policy | terms & conditions (left) -->
+            <nav class="footer__legal-nav" aria-label="Юридические документы">
+              <ul class="footer__legal-list">
+                <li class="footer__legal-item">
+                  <a href="/privacy" class="footer__legal-link"
+                    >Privacy Policy</a
+                  >
+                </li>
+                <li
+                  class="footer__legal-item footer__legal-item--sep"
+                  aria-hidden="true"
+                >
+                  |
+                </li>
+                <li class="footer__legal-item">
+                  <a href="/terms" class="footer__legal-link"
+                    >Terms &amp; Conditions</a
+                  >
+                </li>
+              </ul>
+            </nav>
+
+            <!-- all copyright (right) -->
+            <p class="footer__copyright">
+              <small>
+                &copy; <time datetime="2022">2022</time> All rights reserved
+              </small>
+            </p>
+          </div>
+        </div>
+        <!-- /footer__bottom -->
+      </div>
+      <!-- /footer__container -->
+    </footer>
 
     <script src="js/script.js"></script>
   </body>
