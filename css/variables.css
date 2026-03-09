@@ -1,0 +1,29 @@
+:root {
+  /* Цвета из макета Figma */
+  --color-primary: #7c3aed;
+  --color-primary-dark: #5b21b6;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-bg: #ffffff;
+  --color-bg-light: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-white: #ffffff;
+  --color-dark: #1f2937;
+
+  /* Типографика */
+  --font-family-main: 'Segoe UI', Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* Отступы */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+
+  --border-radius: 8px;
+}

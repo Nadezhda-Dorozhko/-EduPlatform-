@@ -22,6 +22,15 @@
           <span itemprop="name">EduPlatform</span>
         </a>
       </div>
+      <button
+        class="header__burger"
+        aria-label="Открыть меню"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
       <meta
         itemprop="description"
@@ -63,6 +72,7 @@
           <img
             src="images/course-2.jpg"
             alt="Студент обучается онлайн с ноутбуком"
+            loading="lazy"
           />
           <figcaption>Обучение доступно из любой точки мира</figcaption>
         </figure>
@@ -83,6 +93,7 @@
               src="images/course-1.jpg"
               alt="Курс по UI/UX дизайну"
               itemprop="image"
+              loading="lazy"
             />
             <figcaption>Популярное направление</figcaption>
           </figure>
@@ -118,6 +129,7 @@
               src="images/course-4.jpg"
               alt="Курс по программированию на Python"
               itemprop="image"
+              loading="lazy"
             />
             <figcaption>Для начинающих</figcaption>
           </figure>
@@ -147,23 +159,30 @@
         <h2>Наши преподаватели</h2>
         <article class="instructor-card">
           <figure>
-            <img src="images/avatar.jpg" alt="Преподаватель по дизайну" />
-            <figcaption>Эксперт с 10-летним опытом</figcaption>
+            <img
+              src="images/course-7.jpg"
+              alt="Преподаватель по дизайну"
+              loading="lazy"
+            />
           </figure>
-          <h3>Анна Смирнова</h3>
-          <p>UI/UX дизайнер</p>
+          <div class="instructor-card__info">
+            <h3>Анна Смирнова</h3>
+            <p>UI/UX дизайнер</p>
+          </div>
         </article>
 
         <article class="instructor-card">
           <figure>
             <img
-              src="images/course-7.jpg"
+              src="images/19.jpg"
               alt="Преподаватель по программированию"
+              loading="lazy"
             />
-            <figcaption>Практикующий разработчик</figcaption>
           </figure>
-          <h3>Иван Петров</h3>
-          <p>Python разработчик</p>
+          <div class="instructor-card__info">
+            <h3>Иван Петров</h3>
+            <p>Python разработчик</p>
+          </div>
         </article>
       </section>
 

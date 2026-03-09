@@ -1,31 +1,59 @@
-/* Сброс отступов */
-body {
+@import url('variables.css');
+@import url('header.css');
+@import url('main.css');
+@import url('footer.css');
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Montserrat', sans-serif;
-  background-color: #c9f0ff;
-  color: #000000;
-  font-size: 20px;
 }
 
-/* Заголовок */
-h1 {
-  text-align: center;
-  margin-top: 60px;
+body {
+  font-family: var(--font-family-main);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  line-height: 1.6;
+  background-color: #fff5f5;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #fff5f5 0px,
+    #fff5f5 60px,
+    #ffffff 60px,
+    #ffffff 80px
+  );
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Абзац */
-p {
-  text-align: center;
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
-/* Блок из Figma */
-.block {
-  background-color: #a8c5f9;
-  padding: 20px;
-  border-radius: 12px;
-  width: 300px;
-  margin: 40px auto;
-  text-align: center;
+a {
+  color: inherit;
+  text-decoration: none;
 }
-/* image 10 */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+.skip-link:focus {
+  top: 0;
+}
