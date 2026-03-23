@@ -14,14 +14,7 @@ body {
   font-size: var(--font-size-base);
   color: var(--color-text);
   line-height: 1.6;
-  background-color: #fff5f5;
-  background-image: repeating-linear-gradient(
-    90deg,
-    #fff5f5 0px,
-    #fff5f5 60px,
-    #ffffff 60px,
-    #ffffff 80px
-  );
+  background-color: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
