@@ -47,6 +47,12 @@
         />
         <button type="submit">Найти</button>
       </form>
+
+      <button class="header__burger" aria-expanded="false" aria-label="Открыть меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </header>
 
     <!-- ================= MAIN ================= -->
@@ -63,6 +69,7 @@
           <img
             src="images/course-2.jpg"
             alt="Студент обучается онлайн с ноутбуком"
+            loading="lazy"
           />
           <figcaption>Обучение доступно из любой точки мира</figcaption>
         </figure>
@@ -73,16 +80,15 @@
         <h2>Новые курсы</h2>
 
         <!-- Course 1 -->
-        <article
-          class="course-card"
-          itemscope
-          itemtype="https://schema.org/Course"
-        >
+        <article class="course-card" itemscope itemtype="https://schema.org/Course">
+          <button class="bookmark-btn" data-id="course-1" aria-label="Добавить в закладки">☆</button>
+
           <figure class="course-card__image">
             <img
               src="images/course-1.jpg"
               alt="Курс по UI/UX дизайну"
               itemprop="image"
+              loading="lazy"
             />
             <figcaption>Популярное направление</figcaption>
           </figure>
@@ -108,16 +114,15 @@
         </article>
 
         <!-- Course 2 -->
-        <article
-          class="course-card"
-          itemscope
-          itemtype="https://schema.org/Course"
-        >
+        <article class="course-card" itemscope itemtype="https://schema.org/Course">
+          <button class="bookmark-btn" data-id="course-2" aria-label="Добавить в закладки">☆</button>
+
           <figure class="course-card__image">
             <img
               src="images/course-4.jpg"
               alt="Курс по программированию на Python"
               itemprop="image"
+              loading="lazy"
             />
             <figcaption>Для начинающих</figcaption>
           </figure>
@@ -142,29 +147,106 @@
         </article>
       </section>
 
+      <!-- PROGRESS -->
+      <section class="progress-section">
+        <h2>Мой прогресс</h2>
+        <div class="progress-bar">
+          <div class="progress-bar__fill"></div>
+        </div>
+        <p class="progress-bar__label">0 из 5 уроков пройдено</p>
+        <ul class="lessons-list">
+          <li class="lesson-item" data-lesson="1">
+            <span class="lesson-item__text">Урок 1: Введение в UI/UX</span>
+            <button class="bookmark-btn" data-id="lesson-1" aria-label="Добавить урок в закладки">☆</button>
+          </li>
+          <li class="lesson-item" data-lesson="2">
+            <span class="lesson-item__text">Урок 2: Основы Figma</span>
+            <button class="bookmark-btn" data-id="lesson-2" aria-label="Добавить урок в закладки">☆</button>
+          </li>
+          <li class="lesson-item" data-lesson="3">
+            <span class="lesson-item__text">Урок 3: Компоненты</span>
+            <button class="bookmark-btn" data-id="lesson-3" aria-label="Добавить урок в закладки">☆</button>
+          </li>
+          <li class="lesson-item" data-lesson="4">
+            <span class="lesson-item__text">Урок 4: Адаптивность</span>
+            <button class="bookmark-btn" data-id="lesson-4" aria-label="Добавить урок в закладки">☆</button>
+          </li>
+          <li class="lesson-item" data-lesson="5">
+            <span class="lesson-item__text">Урок 5: Финальный проект</span>
+            <button class="bookmark-btn" data-id="lesson-5" aria-label="Добавить урок в закладки">☆</button>
+          </li>
+        </ul>
+
+        <!-- Панель закладок -->
+        <div class="bookmarks-panel">
+          <h3>Закладки <span class="bookmarks-count">(0)</span></h3>
+          <ul class="bookmarks-list">
+            <li class="bookmarks-list__empty">Нет сохранённых закладок</li>
+          </ul>
+        </div>
+      </section>
+
       <!-- INSTRUCTORS -->
       <section class="instructors">
         <h2>Наши преподаватели</h2>
         <article class="instructor-card">
           <figure>
-            <img src="images/avatar.jpg" alt="Преподаватель по дизайну" />
-            <figcaption>Эксперт с 10-летним опытом</figcaption>
+            <img
+              src="images/course-7.jpg"
+              alt="Преподаватель по дизайну"
+              loading="lazy"
+            />
           </figure>
-          <h3>Анна Смирнова</h3>
-          <p>UI/UX дизайнер</p>
+          <div class="instructor-card__info">
+            <h3>Анна Смирнова</h3>
+            <p>UI/UX дизайнер</p>
+          </div>
         </article>
 
         <article class="instructor-card">
           <figure>
             <img
-              src="images/course-7.jpg"
+              src="images/19.jpg"
               alt="Преподаватель по программированию"
+              loading="lazy"
             />
-            <figcaption>Практикующий разработчик</figcaption>
           </figure>
-          <h3>Иван Петров</h3>
-          <p>Python разработчик</p>
+          <div class="instructor-card__info">
+            <h3>Иван Петров</h3>
+            <p>Python разработчик</p>
+          </div>
         </article>
+      </section>
+
+      <!-- QUIZ -->
+      <section class="quiz-section">
+        <h2>Тест по курсу</h2>
+        <form class="quiz-form">
+
+          <div class="quiz-question">
+            <p>1. Что такое UI/UX дизайн?</p>
+            <label><input type="radio" name="q1" value="a"> Программирование интерфейсов</label>
+            <label><input type="radio" name="q1" value="b"> Проектирование пользовательского опыта</label>
+            <label><input type="radio" name="q1" value="c"> Верстка HTML-страниц</label>
+          </div>
+
+          <div class="quiz-question">
+            <p>2. Какой инструмент используется для прототипирования?</p>
+            <label><input type="radio" name="q2" value="a"> Photoshop</label>
+            <label><input type="radio" name="q2" value="b"> Sketch</label>
+            <label><input type="radio" name="q2" value="c"> Figma</label>
+          </div>
+
+          <div class="quiz-question">
+            <p>3. Что означает CSS?</p>
+            <label><input type="radio" name="q3" value="a"> Cascading Style Sheets</label>
+            <label><input type="radio" name="q3" value="b"> Computer Style System</label>
+            <label><input type="radio" name="q3" value="c"> Creative Style Syntax</label>
+          </div>
+
+          <button type="submit" class="quiz-form__btn">Проверить ответы</button>
+        </form>
+        <p class="quiz-result"></p>
       </section>
 
       <!-- NEWSLETTER -->
@@ -221,6 +303,8 @@
       </div>
     </footer>
 
+    <script src="js/utils/helpers.js"></script>
     <script src="js/script.js"></script>
+
   </body>
 </html>
