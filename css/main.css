@@ -1,0 +1,267 @@
+/* ===== HERO ===== */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: transparent;
+}
+
+.hero__content {
+  flex: 1;
+}
+
+.hero__content h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.3;
+}
+
+.hero__content p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.hero__button {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.hero__button:hover {
+  background: var(--color-primary-dark);
+}
+
+.hero__image {
+  flex: 1;
+}
+
+.hero__image img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.hero__image figcaption {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* ===== КУРСЫ ===== */
+.courses {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+  background: transparent;
+}
+
+.courses h2 {
+  grid-column: 1 / -1;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.courses__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+/* Если .courses__grid нет в HTML — карточки напрямую в .courses */
+.courses .course-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  transition: box-shadow 0.2s;
+}
+.courses .course-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.course-card__image img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.course-card__image figcaption {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  padding: 0.3rem var(--spacing-sm);
+  background: var(--color-bg-light);
+}
+
+.course-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xs);
+  color: var(--color-text);
+}
+
+.course-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  padding: 0 var(--spacing-sm) var(--spacing-sm);
+  flex: 1;
+}
+
+.course-card__button {
+  display: block;
+  margin: var(--spacing-sm);
+  padding: 0.6rem var(--spacing-sm);
+  background: var(--color-dark);
+  color: var(--color-white);
+  text-align: center;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.course-card__button:hover {
+  background: var(--color-primary);
+}
+
+/* ===== ПРЕПОДАВАТЕЛИ ===== */
+.instructors {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: transparent; /* фон теперь от body */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.instructors h2 {
+  grid-column: 1 / -1;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.instructor-card {
+  background: var(--color-white);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.instructor-card figure {
+  margin: 0;
+  width: 100%;
+  height: 220px; /* фиксированная высота */
+  overflow: hidden; /* обрезаем лишнее */
+}
+
+.instructor-card figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* заполняет без растяжки */
+  object-position: center top; /* показывает лицо */
+  display: block;
+}
+
+.instructor-card__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+}
+
+.instructor-card h3 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.instructor-card p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+/* ===== NEWSLETTER ===== */
+.newsletter {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: rgba(245, 242, 250, 0.92);
+  text-align: center;
+  color: var(--color-text);
+}
+
+.newsletter h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+.newsletter__form {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.newsletter__form label {
+  display: none;
+}
+
+.newsletter__form input {
+  padding: 0.6rem var(--spacing-sm);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  width: 300px;
+  outline: none;
+}
+
+.newsletter__form button {
+  padding: 0.6rem var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.newsletter__form button:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ===== МЕДИАЗАПРОСЫ ===== */
+@media (max-width: 767px) {
+  .hero {
+    flex-direction: column;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+  .hero__content h1 {
+    font-size: var(--font-size-xl);
+  }
+  .courses {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+  .instructors {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+  .newsletter {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+  .newsletter__form input {
+    width: 100%;
+  }
+}

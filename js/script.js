@@ -1,7 +1,9 @@
-// Различные методы поиска элементов
+// ========================================
+// 1. ПОИСК ЭЛЕМЕНТОВ (демонстрация для лаб. работы)
+// ========================================
 const header = document.querySelector('.header');
 const allCards = document.querySelectorAll('.course-card');
-const mainContainer = document.getElementById('main-container');
+const mainContainer = document.querySelector('.main');
 
 console.log('Найдено элементов:', {
   '.header': header,
@@ -9,185 +11,285 @@ console.log('Найдено элементов:', {
   '.container': mainContainer
 });
 
-// Манипуляция контентом
+// ========================================
+// 2. МАНИПУЛЯЦИЯ КОНТЕНТОМ
+// ========================================
+// Устанавливаем название логотипа
 const projectTitle = document.querySelector('.header__logo a');
 projectTitle.textContent = 'EduPlatform';
 
-// Изменение HTML содержимого
-const mainContent = document.querySelector('.hero');
-mainContent.innerHTML += '<div class="notification">Добро пожаловать на платформу!</div>';
+// ========================================
+// 3. РАБОТА С КЛАССАМИ И СТИЛЯМИ
+// ========================================
+const firstCard = document.querySelector('.course-card');
+if (firstCard) {
+  firstCard.classList.add('card--highlighted');
+  firstCard.style.transition = 'all 0.3s ease';
+}
 
-// Создание новых элементов
-const newButton = document.createElement('button');
-newButton.className = 'btn btn--primary';
-newButton.textContent = 'Начать обучение';
-document.querySelector('.header__container').appendChild(newButton);
+// ========================================
+// 4. БАЗОВЫЕ СОБЫТИЯ
+// ========================================
 
-// Добавление/удаление классов
-const card = document.querySelector('.course-card');
-card.classList.add('card--highlighted');
-card.classList.remove('card--default');
+// Кнопка "Начать обучение" в hero
+const heroButton = document.querySelector('.hero__button');
+if (heroButton) {
+  heroButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    console.log('Кнопка нажата!');
+    const coursesSection = document.querySelector('.courses');
+    if (coursesSection) {
+      coursesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+}
 
-// Изменение стилей напрямую
-card.style.transform = 'scale(1.05)';
-card.style.transition = 'all 0.3s ease';
+// Поиск
+const searchInput = document.querySelector('#search');
+if (searchInput) {
+  searchInput.addEventListener('input', function(event) {
+    console.log('Введен текст:', event.target.value);
+  });
+}
 
-// Установка нескольких стилей
-Object.assign(card.style, {
-  backgroundColor: '#f0f0f0',
-  padding: '20px',
-  borderRadius: '8px'
-});
+// Форма подписки
+const newsletterForm = document.querySelector('.newsletter__form');
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    console.log('Данные формы:', Object.fromEntries(formData));
+  });
+}
 
-
-// Обработчик клика
-const button = document.querySelector('.hero__button');
-button.addEventListener('click', function(event) {
-  event.preventDefault();
-  console.log('Кнопка нажата!');
-});
-
-// Обработчик ввода в поле
-const searchInput = document.querySelector('.header__search input');
-searchInput.addEventListener('input', function(event) {
-  console.log('Введен текст:', event.target.value);
-});
-
-// Обработчик отправки формы
-const contactForm = document.querySelector('.newsletter__form');
-contactForm.addEventListener('submit', function(event) {
-  event.preventDefault();
-  const formData = new FormData(this);
-  console.log('Данные формы:', Object.fromEntries(formData));
-});
-
-// Делегирование событий для динамически добавляемых элементов
-document.querySelector('.courses__grid').addEventListener('click', function(event) {
-  if (event.target.classList.contains('course-card__btn')) {
+// ========================================
+// 5. ДЕЛЕГИРОВАНИЕ СОБЫТИЙ — карточки курсов
+// Кнопка "Подробнее" показывает детали, НЕ скрывает карточку
+// ========================================
+document.querySelector('.courses').addEventListener('click', function(event) {
+  if (event.target.classList.contains('course-card__button')) {
+    event.preventDefault();
     const card = event.target.closest('.course-card');
-    card.style.display = 'none';
-    console.log('Карточка скрыта');
+    const title = card.querySelector('.course-card__title').textContent;
+    console.log('Открыт курс:', title);
+
+    // Убираем выделение со всех карточек
+    document.querySelectorAll('.course-card').forEach(function(c) {
+      c.classList.remove('course-card--active');
+    });
+
+    // Выделяем выбранную
+    card.classList.add('course-card--active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 });
 
-
-// Прогресс-бар прохождения курса
+// ========================================
+// 6. ПРОГРЕСС-БАР
+// ========================================
 const lessons = document.querySelectorAll('.lesson-item');
 const progressFill = document.querySelector('.progress-bar__fill');
 const progressLabel = document.querySelector('.progress-bar__label');
 
-let completedCount = 0;
 const totalLessons = lessons.length;
 
+// Восстанавливаем прогресс из localStorage
+let completedCount = parseInt(localStorage.getItem('progress') || '0');
+const completedIds = JSON.parse(localStorage.getItem('completedLessons') || '[]');
+
+// Восстанавливаем визуальное состояние уроков
 lessons.forEach(function(lesson) {
-  lesson.addEventListener('click', function() {
+  const lessonId = lesson.dataset.lesson;
+  if (completedIds.includes(lessonId)) {
+    lesson.classList.add('lesson-item--done');
+  }
+});
+
+// Обновляем прогресс-бар при загрузке
+updateProgressBar();
+
+function updateProgressBar() {
+  const count = document.querySelectorAll('.lesson-item--done').length;
+  const percent = totalLessons > 0 ? Math.round((count / totalLessons) * 100) : 0;
+  progressFill.style.width = percent + '%';
+  progressLabel.textContent = count + ' из ' + totalLessons + ' уроков пройдено';
+}
+
+lessons.forEach(function(lesson) {
+  lesson.addEventListener('click', function(event) {
+    // Клик по кнопке закладки внутри урока — не переключаем прогресс
+    if (event.target.classList.contains('bookmark-btn')) return;
+
+    const lessonId = this.dataset.lesson;
+    const completedIds = JSON.parse(localStorage.getItem('completedLessons') || '[]');
+
     if (!this.classList.contains('lesson-item--done')) {
       this.classList.add('lesson-item--done');
-      completedCount++;
-
-      const percent = Math.round((completedCount / totalLessons) * 100);
-      progressFill.style.width = percent + '%';
-      progressLabel.textContent = completedCount + ' из ' + totalLessons + ' уроков пройдено';
-
-      console.log('Прогресс:', percent + '%');
-
-      localStorage.setItem('progress', completedCount);
+      completedIds.push(lessonId);
+      console.log('Урок пройден:', lessonId);
+    } else {
+      this.classList.remove('lesson-item--done');
+      const idx = completedIds.indexOf(lessonId);
+      if (idx !== -1) completedIds.splice(idx, 1);
+      console.log('Урок отмечен как непройденный:', lessonId);
     }
+
+    localStorage.setItem('completedLessons', JSON.stringify(completedIds));
+    localStorage.setItem('progress', document.querySelectorAll('.lesson-item--done').length);
+    updateProgressBar();
   });
 });
 
-// Система закладок для уроков
-const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
+// ========================================
+// 7. ЗАКЛАДКИ
+// ========================================
+const BOOKMARK_LABELS = {
+  'course-1': 'UI/UX Design в Figma',
+  'course-2': 'Программирование на Python',
+  'lesson-1': 'Урок 1: Введение в UI/UX',
+  'lesson-2': 'Урок 2: Основы Figma',
+  'lesson-3': 'Урок 3: Компоненты',
+  'lesson-4': 'Урок 4: Адаптивность',
+  'lesson-5': 'Урок 5: Финальный проект',
+};
 
-let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
 
-bookmarkButtons.forEach(function(btn) {
-  const lessonId = btn.dataset.id;
+function renderBookmarksPanel() {
+  const list = document.querySelector('.bookmarks-list');
+  const count = document.querySelector('.bookmarks-count');
+  if (!list) return;
 
-  if (bookmarks.includes(lessonId)) {
-    btn.classList.add('bookmark-btn--active');
+  count.textContent = '(' + bookmarks.length + ')';
+
+  if (bookmarks.length === 0) {
+    list.innerHTML = '<li class="bookmarks-list__empty">Нет сохранённых закладок</li>';
+    return;
   }
 
-  btn.addEventListener('click', function() {
-    const id = this.dataset.id;
+  list.innerHTML = bookmarks.map(function(id) {
+    const label = BOOKMARK_LABELS[id] || id;
+    return '<li class="bookmarks-list__item">' +
+      '<span>' + label + '</span>' +
+      '<button class="bookmarks-list__remove" data-id="' + id + '" aria-label="Удалить закладку">✕</button>' +
+      '</li>';
+  }).join('');
+}
+
+function updateBookmarkButtons() {
+  document.querySelectorAll('.bookmark-btn').forEach(function(btn) {
+    const id = btn.dataset.id;
+    if (bookmarks.includes(id)) {
+      btn.classList.add('bookmark-btn--active');
+      btn.textContent = '★';
+    } else {
+      btn.classList.remove('bookmark-btn--active');
+      btn.textContent = '☆';
+    }
+  });
+}
+
+// Инициализация при загрузке
+updateBookmarkButtons();
+renderBookmarksPanel();
+
+// Обработка кликов по кнопкам закладок (делегирование)
+document.addEventListener('click', function(event) {
+  if (event.target.classList.contains('bookmark-btn')) {
+    const id = event.target.dataset.id;
     const index = bookmarks.indexOf(id);
 
     if (index === -1) {
       bookmarks.push(id);
-      this.classList.add('bookmark-btn--active');
       console.log('Добавлено в закладки:', id);
     } else {
       bookmarks.splice(index, 1);
-      this.classList.remove('bookmark-btn--active');
       console.log('Удалено из закладок:', id);
     }
 
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    updateBookmarkButtons();
+    renderBookmarksPanel();
     console.log('Все закладки:', bookmarks);
-  });
+  }
+
+  // Удаление из панели закладок
+  if (event.target.classList.contains('bookmarks-list__remove')) {
+    const id = event.target.dataset.id;
+    bookmarks = bookmarks.filter(function(b) { return b !== id; });
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    updateBookmarkButtons();
+    renderBookmarksPanel();
+  }
 });
 
-// Тест с проверкой ответов
+// ========================================
+// 8. ТЕСТ
+// ========================================
 const quizForm = document.querySelector('.quiz-form');
+if (quizForm) {
+  quizForm.addEventListener('submit', function(event) {
+    event.preventDefault();
 
-quizForm.addEventListener('submit', function(event) {
-  event.preventDefault();
+    const answers = { q1: 'b', q2: 'c', q3: 'a' };
+    let score = 0;
+    const formData = new FormData(this);
 
-  const answers = {
-    q1: 'b',
-    q2: 'c',
-    q3: 'a'
-  };
+    Object.keys(answers).forEach(function(question) {
+      const correct = answers[question];
+      const selected = formData.get(question);
+      const options = document.querySelectorAll('input[name="' + question + '"]');
 
-  let score = 0;
-  const formData = new FormData(this);
+      options.forEach(function(option) {
+        const label = option.parentNode;
+        label.style.color = '';
+        if (option.value === correct) {
+          label.style.color = 'green';
+        } else if (option.value === selected && selected !== correct) {
+          label.style.color = 'red';
+        }
+      });
 
-  for (const [question, correct] of Object.entries(answers)) {
-    const selected = formData.get(question);
-    const options = document.querySelectorAll('input[name="' + question + '"]');
-
-    options.forEach(function(option) {
-      const label = option.closest('label') || option.parentNode;
-      if (option.value === correct) {
-        label.style.color = 'green';
-      } else if (option.value === selected && selected !== correct) {
-        label.style.color = 'red';
-      }
+      if (selected === correct) score++;
     });
 
-    if (selected === correct) {
-      score++;
-    }
-  }
+    const result = document.querySelector('.quiz-result');
+    result.textContent = 'Результат: ' + score + ' из ' + Object.keys(answers).length;
+    console.log('Результат теста:', score);
+  });
+}
 
-  const result = document.querySelector('.quiz-result');
-  result.textContent = 'Результат: ' + score + ' из ' + Object.keys(answers).length;
-  console.log('Результат теста:', score);
-});
-
-// Валидация формы подписки
+// ========================================
+// 9. ВАЛИДАЦИЯ ФОРМЫ ПОДПИСКИ
+// ========================================
 const emailInput = document.querySelector('#email');
 
-emailInput.addEventListener('blur', function() {
-  clearErrors(this);
-  if (!validateEmail(this.value)) {
-    showError(this, 'Введите корректный email');
-  }
-});
+if (emailInput) {
+  emailInput.addEventListener('blur', function() {
+    clearErrors(this);
+    if (this.value && !validateEmail(this.value)) {
+      showError(this, 'Введите корректный email');
+    }
+  });
+}
 
-document.querySelector('.newsletter__form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  clearErrors(emailInput);
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    clearErrors(emailInput);
 
-  if (!emailInput.value.trim()) {
-    showError(emailInput, 'Поле email обязательно');
-    return;
-  }
+    if (!emailInput.value.trim()) {
+      showError(emailInput, 'Поле email обязательно');
+      return;
+    }
 
-  if (!validateEmail(emailInput.value)) {
-    showError(emailInput, 'Введите корректный email');
-    return;
-  }
+    if (!validateEmail(emailInput.value)) {
+      showError(emailInput, 'Введите корректный email');
+      return;
+    }
 
-  console.log('Форма отправлена:', emailInput.value);
-});
+    console.log('Форма отправлена:', emailInput.value);
+    emailInput.value = '';
+    alert('Вы успешно подписались на новости!');
+  });
+}
