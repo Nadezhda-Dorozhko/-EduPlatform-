@@ -260,7 +260,7 @@
         <article class="instructor-card">
           <figure>
             <img
-              src="avatar.jpg"
+              src="images/course-9.jpg"
               alt="Преподаватель по программированию"
               loading="lazy"
             />
@@ -271,12 +271,50 @@
           </div>
         </article>
       </section>
-      <form id="search-form">
-        <input type="text" id="search-input" placeholder="Поиск курсов" />
-        <button type="submit">Найти</button>
-      </form>
-      <div id="data-container"></div>
-      <div id="saved-courses-container"></div>
+
+      <!-- =================  (API + ДАННЫЕ) ================= -->
+      <!-- Форма поиска  -->
+      <section class="lab-search">
+        <h2>Поиск курсов через API (Google Books)</h2>
+        <div
+          id="api-status-bar"
+          class="api-status-bar"
+          style="
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+          "
+        ></div>
+        <form id="search-form">
+          <label for="search-input" class="visually-hidden">Поиск курсов</label>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Поиск курсов или тем (например: математика, javascript)..."
+          />
+          <button type="submit">Найти</button>
+        </form>
+      </section>
+
+      <!-- Контейнер для динамических данных из API -->
+      <section class="api-results">
+        <h2>Результаты поиска</h2>
+        <div
+          id="loading-indicator"
+          style="display: none; text-align: center; margin: 20px 0"
+        >
+          Загрузка данных с google books api...
+        </div>
+        <div id="data-container"></div>
+      </section>
+
+      <!-- Контейнер для сохранённых курсов -->
+      <section class="saved-courses">
+        <h2>Сохранённые курсы</h2>
+        <div id="saved-courses-container"></div>
+      </section>
 
       <!-- QUIZ -->
       <section class="quiz-section">
@@ -380,6 +418,7 @@
       </div>
     </footer>
 
+    <!-- Скрипты -->
     <script src="js/utils/helpers.js"></script>
     <script type="module" src="js/script.js"></script>
   </body>

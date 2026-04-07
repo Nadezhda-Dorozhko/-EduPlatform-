@@ -1,510 +1,52 @@
-// ================================================================================
-// ПОЛНЫЙ ИСПРАВЛЕННЫЙ КОД script.js
-// Лабораторная работа - Вариант 8: Образовательная платформа EduPlatform
-// ================================================================================
-
 // ========================================
-// ИМПОРТЫ
+// 1. ПОИСК ЭЛЕМЕНТОВ (демонстрация для лаб. работы)
 // ========================================
-import ApiService from './api/apiService.js';
-import { API_CONFIG } from './api/config.js';
-import LocalStorageService from './storage/localStorage.js';
-
-// ========================================
-// ГЛАВНЫЙ КЛАСС ДЛЯ РАБОТЫ С API
-// ========================================
-class APIIntegrationManager {
-  constructor() {
-    this.localStorage = new LocalStorageService(); // Создаем сервис для работы с localStorage
-    this.api = null; // Здесь будет храниться экземпляр ApiService
-    this.currentData = null; // Текущие загруженные данные
-    this.init(); // Запускаем инициализацию
-  }
-
-  // ========================================
-  // ИНИЦИАЛИЗАЦИЯ
-  // ========================================
-  async init() {
-    console.log('🚀 Запуск EduPlatform...');
-    await this.initializeAPI(); // Настраиваем API
-    this.setupEventListeners(); // Добавляем обработчики событий
-    this.setupOfflineSync(); // Настраиваем синхронизацию
-  }
-
-  // ========================================
-  // НАСТРОЙКА API
-  // ========================================
-  async initializeAPI() {
-    const config = API_CONFIG.education;
-    this.api = new ApiService(config.url, config.apiKey);
-    console.log('✅ API инициализирован:', config.url);
-  }
-
-  // ========================================
-  // ОБРАБОТЧИКИ СОБЫТИЙ
-  // ========================================
-  setupEventListeners() {
-    // Форма поиска курсов
-    const searchForm = document.getElementById('search-form');
-    if (searchForm) {
-      searchForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Отменяем перезагрузку страницы
-        this.handleSearch(); // Вызываем метод поиска
-      });
-      console.log('✅ Форма поиска подключена');
-    } else {
-      console.warn('⚠️ Форма поиска не найдена');
-    }
-  }
-
-  // ========================================
-  // НАСТРОЙКА СИНХРОНИЗАЦИИ
-  // ========================================
-  setupOfflineSync() {
-    // Когда интернет появляется
-    window.addEventListener('online', () => {
-      console.log('🌐 Интернет восстановлен');
-      alert('✅ Соединение восстановлено!');
-      this.syncProgress();
-    });
-
-    // Когда интернет пропадает
-    window.addEventListener('offline', () => {
-      console.log('📵 Интернет отключен');
-      alert('⚠️ Работаем в автономном режиме');
-    });
-  }
-
-  // ========================================
-  // ОБРАБОТКА ПОИСКА
-  // ========================================
-  async handleSearch() {
-    const searchInput = document.getElementById('search-input');
-    const query = searchInput.value.trim();
-
-    // Проверка на пустой запрос
-    if (!query) {
-      alert('⚠️ Введите поисковый запрос');
-      return;
-    }
-
-    console.log('🔍 Ищем курсы по запросу:', query);
-    await this.fetchData({ q: query });
-  }
-
-  // ========================================
-  // ЗАГРУЗКА ДАННЫХ ИЗ API С КЭШИРОВАНИЕМ
-  // ========================================
-  async fetchData(params = {}) {
-    console.log('📦 Начинаем загрузку данных...');
-
-    try {
-      // =====================
-      // 1️⃣ ПРОВЕРКА КЭША
-      // =====================
-      const cacheKey = `api_data_${JSON.stringify(params)}`;
-      const cachedData = this.localStorage.get(cacheKey);
-
-      if (cachedData) {
-        console.log('✅ Данные найдены в кэше');
-        this.currentData = cachedData;
-        this.renderData(cachedData);
-        alert('✅ Данные загружены из кэша (быстрая загрузка)');
-        return;
-      }
-
-      // =====================
-      // 2️⃣ ЗАПРОС К API
-      // =====================
-      console.log('📡 Отправляем запрос к API Open Library...');
-      const data = await this.api.get('/search.json', params);
-      console.log('📥 Получены данные от API:', data);
-
-      // =====================
-      // 3️⃣ ОБРАБОТКА ДАННЫХ
-      // =====================
-      const processedData = this.processEducationData(data);
-      console.log('✅ Обработано курсов:', processedData.length);
-
-      // =====================
-      // 4️⃣ СОХРАНЕНИЕ В КЭШ
-      // =====================
-      this.localStorage.set(cacheKey, processedData);
-      this.localStorage.set('last_api_data', processedData);
-      this.localStorage.set('last_api_call', new Date().toISOString());
-      console.log('💾 Данные сохранены в кэш');
-
-      // =====================
-      // 5️⃣ ПОКАЗ ДАННЫХ
-      // =====================
-      this.currentData = processedData;
-      this.renderData(processedData);
-      alert('✅ Курсы успешно загружены!');
-    } catch (error) {
-      // =====================
-      // ОБРАБОТКА ОШИБОК
-      // =====================
-      console.error('❌ Ошибка загрузки данных:', error);
-      alert(
-        '❌ Не удалось загрузить курсы. Проверьте подключение к интернету.'
-      );
-
-      // Показываем кэшированные данные, если есть
-      const lastData = this.localStorage.get('last_api_data');
-      if (lastData) {
-        console.log('📋 Показываем последние кэшированные данные');
-        this.renderData(lastData);
-      }
-    }
-  }
-
-  // ========================================
-  // ОБРАБОТКА ДАННЫХ ОТ API
-  // ========================================
-  processEducationData(data) {
-    // Проверяем наличие данных
-    if (!data || !data.docs) {
-      console.warn('⚠️ Нет данных от API');
-      return [];
-    }
-
-    // Берем первые 6 результатов и преобразуем в нужный формат
-    return data.docs.slice(0, 6).map((item) => ({
-      id: item.key || 'course_' + Math.random(),
-      title: item.title || 'Без названия',
-      description: item.first_sentence?.[0] || 'Описание отсутствует',
-      author: item.author_name?.[0] || 'Автор неизвестен',
-      publishYear: item.first_publish_year || 'Год неизвестен',
-      subject: item.subject?.[0] || 'general',
-      coverId: item.cover_i, // ID обложки для картинки
-    }));
-  }
-
-  // ========================================
-  // ОТОБРАЖЕНИЕ ДАННЫХ НА СТРАНИЦЕ
-  // ========================================
-  renderData(data) {
-    const container = document.getElementById('data-container');
-
-    if (!container) {
-      console.error('❌ Контейнер #data-container не найден');
-      return;
-    }
-
-    // Очищаем контейнер
-    container.innerHTML = '';
-
-    // Проверка на пустые данные
-    if (!data || data.length === 0) {
-      container.innerHTML = `
-        <p style="text-align: center; color: #999; padding: 40px;">
-          Курсы не найдены. Попробуйте другой запрос.
-        </p>
-      `;
-      return;
-    }
-
-    // Добавляем заголовок
-    const title = document.createElement('h2');
-    title.textContent = `Найдено курсов: ${data.length}`;
-    title.style.cssText =
-      'grid-column: 1 / -1; margin-bottom: 20px; color: #1f2937;';
-    container.appendChild(title);
-
-    // Настраиваем grid для карточек
-    container.style.cssText = `
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      background: #f9fafb;
-      border-radius: 8px;
-    `;
-
-    // Создаем карточки курсов
-    data.forEach((item) => {
-      const card = this.createCourseCard(item);
-      container.appendChild(card);
-    });
-
-    console.log('✅ Отображено курсов:', data.length);
-  }
-
-  // ========================================
-  // СОЗДАНИЕ КАРТОЧКИ КУРСА
-  // ========================================
-  createCourseCard(item) {
-    const card = document.createElement('div');
-    card.className = 'course-card';
-
-    // Стили карточки
-    card.style.cssText = `
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 20px;
-      background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
-    `;
-
-    // URL обложки книги (если есть)
-    const coverUrl = item.coverId
-      ? `https://covers.openlibrary.org/b/id/${item.coverId}-M.jpg`
-      : '';
-
-    // HTML содержимое карточки
-    card.innerHTML = `
-      ${
-        coverUrl
-          ? `
-        <img 
-          src="${coverUrl}" 
-          alt="${item.title}" 
-          style="
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 15px;
-          "
-          onerror="this.style.display='none'"
-        >
-      `
-          : ''
-      }
-      
-      <h3 style="
-        color: #7c3aed;
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-      ">
-        ${item.title}
-      </h3>
-      
-      <p style="
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-        line-height: 1.5;
-      ">
-        ${item.description.substring(0, 150)}${item.description.length > 150 ? '...' : ''}
-      </p>
-      
-      <div style="
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #e5e7eb;
-      ">
-        <small style="
-          color: #9ca3af;
-          display: block;
-          margin-bottom: 5px;
-        ">
-          👤 ${item.author}
-        </small>
-        
-        <small style="
-          color: #9ca3af;
-          display: block;
-          margin-bottom: 15px;
-        ">
-          📅 ${item.publishYear}
-        </small>
-        
-        <button 
-          class="save-course-btn" 
-          data-id="${item.id}"
-          style="
-            width: 100%;
-            padding: 10px;
-            background: #7c3aed;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-          "
-        >
-          💾 Сохранить в прогресс
-        </button>
-      </div>
-    `;
-
-    // Добавляем hover эффекты
-    card.addEventListener('mouseenter', () => {
-      card.style.transform = 'translateY(-5px)';
-      card.style.boxShadow = '0 8px 16px rgba(0,0,0,0.15)';
-    });
-
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-    });
-
-    // Обработчик кнопки сохранения
-    const saveBtn = card.querySelector('.save-course-btn');
-    saveBtn.addEventListener('click', () => {
-      this.saveItem(item);
-    });
-
-    // Hover для кнопки
-    saveBtn.addEventListener('mouseenter', () => {
-      saveBtn.style.background = '#5b21b6';
-    });
-
-    saveBtn.addEventListener('mouseleave', () => {
-      saveBtn.style.background = '#7c3aed';
-    });
-
-    return card;
-  }
-
-  // ========================================
-  // СОХРАНЕНИЕ КУРСА В ПРОГРЕСС
-  // ========================================
-  saveItem(item) {
-    const savedItems = this.localStorage.get('saved_items', []);
-
-    // Проверяем, не сохранен ли уже этот курс
-    const exists = savedItems.find((saved) => saved.id === item.id);
-    if (exists) {
-      alert('ℹ️ Этот курс уже в вашем прогрессе!');
-      return;
-    }
-
-    // Добавляем курс с дополнительными данными
-    savedItems.push({
-      ...item,
-      savedAt: new Date().toISOString(),
-      progress: 0,
-      needsSync: !navigator.onLine, // Помечаем для синхронизации если offline
-    });
-
-    this.localStorage.set('saved_items', savedItems);
-    console.log('✅ Курс сохранен:', item.title);
-    alert(`✅ Курс "${item.title}" добавлен в прогресс обучения!`);
-
-    // Обновляем отображение сохраненных курсов
-    this.displaySavedCourses();
-  }
-
-  // ========================================
-  // ОТОБРАЖЕНИЕ СОХРАНЕННЫХ КУРСОВ
-  // ========================================
-  displaySavedCourses() {
-    const container = document.getElementById('saved-courses-container');
-    if (!container) return;
-
-    const savedItems = this.localStorage.get('saved_items', []);
-
-    container.innerHTML = '';
-
-    if (savedItems.length === 0) {
-      container.innerHTML = `
-        <p style="color: #999; text-align: center; padding: 20px;">
-          Нет сохраненных курсов
-        </p>
-      `;
-      return;
-    }
-
-    // Заголовок
-    const title = document.createElement('h2');
-    title.textContent = 'Мои сохраненные курсы';
-    title.style.cssText = 'margin-bottom: 20px; color: #1f2937;';
-    container.appendChild(title);
-
-    // Список курсов
-    savedItems.forEach((item) => {
-      const div = document.createElement('div');
-      div.style.cssText = `
-        padding: 15px;
-        margin-bottom: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        background: ${item.needsSync ? '#fff3cd' : '#f0fdf4'};
-      `;
-
-      div.innerHTML = `
-        <strong>${item.title}</strong>
-        <br>
-        <small>Сохранено: ${new Date(item.savedAt).toLocaleDateString('ru-RU')}</small>
-        ${item.needsSync ? '<br><small style="color: #f59e0b;">⚠️ Требует синхронизации</small>' : ''}
-      `;
-
-      container.appendChild(div);
-    });
-
-    console.log('✅ Отображено сохраненных курсов:', savedItems.length);
-  }
-
-  // ========================================
-  // СИНХРОНИЗАЦИЯ ПРИ ВОССТАНОВЛЕНИИ СЕТИ
-  // ========================================
-  async syncProgress() {
-    const savedItems = this.localStorage.get('saved_items', []);
-    const itemsNeedingSync = savedItems.filter((item) => item.needsSync);
-
-    if (itemsNeedingSync.length === 0) {
-      console.log('ℹ️ Нет данных для синхронизации');
-      return;
-    }
-
-    console.log('🔄 Синхронизируем', itemsNeedingSync.length, 'элементов...');
-
-    // Убираем флаг needsSync
-    const updatedItems = savedItems.map((item) => ({
-      ...item,
-      needsSync: false,
-      syncedAt: new Date().toISOString(),
-    }));
-
-    this.localStorage.set('saved_items', updatedItems);
-
-    console.log('✅ Синхронизация завершена');
-    alert(`✅ Синхронизировано курсов: ${itemsNeedingSync.length}`);
-
-    // Обновляем отображение
-    this.displaySavedCourses();
-  }
-}
-
-// ================================================================================
-// ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
-// ================================================================================
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('📚 Инициализация EduPlatform...');
-  const manager = new APIIntegrationManager();
-
-  // Показываем сохраненные курсы при загрузке
-  setTimeout(() => {
-    manager.displaySavedCourses();
-  }, 500);
-});
-
-// ================================================================================
-// СУЩЕСТВУЮЩИЙ КОД (закладки, прогресс, тесты)
-// Оставляем как есть - он работает правильно
-// ================================================================================
-
-console.log('📋 Загрузка остального функционала...');
-
-// Поиск элементов
 const header = document.querySelector('.header');
 const allCards = document.querySelectorAll('.course-card');
 const mainContainer = document.querySelector('.main');
+console.log('Найдено элементов:', {
+  '.header': header,
+  '.cards': allCards,
+  '.container': mainContainer,
+});
 
-// Кнопка "Начать обучение"
+// ========================================
+// 2. МАНИПУЛЯЦИЯ КОНТЕНТОМ
+// ========================================
+// Устанавливаем название логотипа
+const projectTitle = document.querySelector('.header__logo a');
+projectTitle.textContent = 'EduPlatform';
+
+// ========================================
+// 3. РАБОТА С КЛАССАМИ И СТИЛЯМИ
+// ========================================
+const firstCard = document.querySelector('.course-card');
+if (firstCard) {
+  firstCard.classList.add('card--highlighted');
+  firstCard.style.transition = 'all 0.3s ease';
+}
+
+// ========================================
+// 4. БАЗОВЫЕ СОБЫТИЯ
+// ========================================
+// Кнопка "Начать обучение" в hero
 const heroButton = document.querySelector('.hero__button');
 if (heroButton) {
   heroButton.addEventListener('click', function (event) {
     event.preventDefault();
+    console.log('Кнопка нажата!');
     const coursesSection = document.querySelector('.courses');
     if (coursesSection) {
       coursesSection.scrollIntoView({ behavior: 'smooth' });
     }
+  });
+}
+
+// Поиск
+const searchInput = document.querySelector('#search');
+if (searchInput) {
+  searchInput.addEventListener('input', function (event) {
+    console.log('Введен текст:', event.target.value);
   });
 }
 
@@ -513,30 +55,46 @@ const newsletterForm = document.querySelector('.newsletter__form');
 if (newsletterForm) {
   newsletterForm.addEventListener('submit', function (event) {
     event.preventDefault();
-    alert('✅ Вы успешно подписались на новости!');
+    const formData = new FormData(this);
+    console.log('Данные формы:', Object.fromEntries(formData));
   });
 }
 
-// Прогресс-бар уроков
+// ========================================
+// 5. ДЕЛЕГИРОВАНИЕ СОБЫТИЙ — карточки курсов
+// Кнопка "Подробнее" показывает детали, НЕ скрывает карточку
+// ========================================
+document.querySelector('.courses').addEventListener('click', function (event) {
+  if (event.target.classList.contains('course-card__button')) {
+    event.preventDefault();
+    const card = event.target.closest('.course-card');
+    const title = card.querySelector('.course-card__title').textContent;
+    console.log('Открыт курс:', title);
+    // Убираем выделение со всех карточек
+    document.querySelectorAll('.course-card').forEach(function (c) {
+      c.classList.remove('course-card--active');
+    });
+    // Выделяем выбранную
+    card.classList.add('course-card--active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
+
+// ========================================
+// 6. ПРОГРЕСС-БАР
+// ========================================
 const lessons = document.querySelectorAll('.lesson-item');
 const progressFill = document.querySelector('.progress-bar__fill');
 const progressLabel = document.querySelector('.progress-bar__label');
 const totalLessons = lessons.length;
 
-function updateProgressBar() {
-  const count = document.querySelectorAll('.lesson-item--done').length;
-  const percent =
-    totalLessons > 0 ? Math.round((count / totalLessons) * 100) : 0;
-  if (progressFill) progressFill.style.width = percent + '%';
-  if (progressLabel)
-    progressLabel.textContent =
-      count + ' из ' + totalLessons + ' уроков пройдено';
-}
-
-// Восстановление прогресса
+// Восстанавливаем прогресс из localStorage
+let completedCount = parseInt(localStorage.getItem('progress') || '0');
 const completedIds = JSON.parse(
   localStorage.getItem('completedLessons') || '[]'
 );
+
+// Восстанавливаем визуальное состояние уроков
 lessons.forEach(function (lesson) {
   const lessonId = lesson.dataset.lesson;
   if (completedIds.includes(lessonId)) {
@@ -544,33 +102,48 @@ lessons.forEach(function (lesson) {
   }
 });
 
+// Обновляем прогресс-бар при загрузке
 updateProgressBar();
 
-// Клик по уроку
+function updateProgressBar() {
+  const count = document.querySelectorAll('.lesson-item--done').length;
+  const percent =
+    totalLessons > 0 ? Math.round((count / totalLessons) * 100) : 0;
+  progressFill.style.width = percent + '%';
+  progressLabel.textContent =
+    count + ' из ' + totalLessons + ' уроков пройдено';
+}
+
 lessons.forEach(function (lesson) {
   lesson.addEventListener('click', function (event) {
+    // Клик по кнопке закладки внутри урока — не переключаем прогресс
     if (event.target.classList.contains('bookmark-btn')) return;
-
     const lessonId = this.dataset.lesson;
     const completedIds = JSON.parse(
       localStorage.getItem('completedLessons') || '[]'
     );
-
     if (!this.classList.contains('lesson-item--done')) {
       this.classList.add('lesson-item--done');
       completedIds.push(lessonId);
+      console.log('Урок пройден:', lessonId);
     } else {
       this.classList.remove('lesson-item--done');
       const idx = completedIds.indexOf(lessonId);
       if (idx !== -1) completedIds.splice(idx, 1);
+      console.log('Урок отмечен как непройденный:', lessonId);
     }
-
     localStorage.setItem('completedLessons', JSON.stringify(completedIds));
+    localStorage.setItem(
+      'progress',
+      document.querySelectorAll('.lesson-item--done').length
+    );
     updateProgressBar();
   });
 });
 
-// Закладки
+// ========================================
+// 7. ЗАКЛАДКИ
+// ========================================
 const BOOKMARK_LABELS = {
   'course-1': 'UI/UX Design в Figma',
   'course-2': 'Программирование на Python',
@@ -587,15 +160,12 @@ function renderBookmarksPanel() {
   const list = document.querySelector('.bookmarks-list');
   const count = document.querySelector('.bookmarks-count');
   if (!list) return;
-
-  if (count) count.textContent = '(' + bookmarks.length + ')';
-
+  count.textContent = '(' + bookmarks.length + ')';
   if (bookmarks.length === 0) {
     list.innerHTML =
       '<li class="bookmarks-list__empty">Нет сохранённых закладок</li>';
     return;
   }
-
   list.innerHTML = bookmarks
     .map(function (id) {
       const label = BOOKMARK_LABELS[id] || id;
@@ -606,7 +176,7 @@ function renderBookmarksPanel() {
         '</span>' +
         '<button class="bookmarks-list__remove" data-id="' +
         id +
-        '">✕</button>' +
+        '" aria-label="Удалить закладку">✕</button>' +
         '</li>'
       );
     })
@@ -626,35 +196,42 @@ function updateBookmarkButtons() {
   });
 }
 
+// Инициализация при загрузке
 updateBookmarkButtons();
 renderBookmarksPanel();
 
+// Обработка кликов по кнопкам закладок (делегирование)
 document.addEventListener('click', function (event) {
   if (event.target.classList.contains('bookmark-btn')) {
     const id = event.target.dataset.id;
     const index = bookmarks.indexOf(id);
-
     if (index === -1) {
       bookmarks.push(id);
+      console.log('Добавлено в закладки:', id);
     } else {
       bookmarks.splice(index, 1);
+      console.log('Удалено из закладок:', id);
     }
-
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     updateBookmarkButtons();
     renderBookmarksPanel();
+    console.log('Все закладки:', bookmarks);
   }
-
+  // Удаление из панели закладок
   if (event.target.classList.contains('bookmarks-list__remove')) {
     const id = event.target.dataset.id;
-    bookmarks = bookmarks.filter((b) => b !== id);
+    bookmarks = bookmarks.filter(function (b) {
+      return b !== id;
+    });
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     updateBookmarkButtons();
     renderBookmarksPanel();
   }
 });
 
-// Тест
+// ========================================
+// 8. ТЕСТ
+// ========================================
 const quizForm = document.querySelector('.quiz-form');
 if (quizForm) {
   quizForm.addEventListener('submit', function (event) {
@@ -662,19 +239,621 @@ if (quizForm) {
     const answers = { q1: 'b', q2: 'c', q3: 'a' };
     let score = 0;
     const formData = new FormData(this);
-
     Object.keys(answers).forEach(function (question) {
       const correct = answers[question];
       const selected = formData.get(question);
+      const options = document.querySelectorAll(
+        'input[name="' + question + '"]'
+      );
+      options.forEach(function (option) {
+        const label = option.parentNode;
+        label.style.color = '';
+        if (option.value === correct) {
+          label.style.color = 'green';
+        } else if (option.value === selected && selected !== correct) {
+          label.style.color = 'red';
+        }
+      });
       if (selected === correct) score++;
     });
-
     const result = document.querySelector('.quiz-result');
-    if (result) {
-      result.textContent =
-        'Результат: ' + score + ' из ' + Object.keys(answers).length;
+    result.textContent =
+      'Результат: ' + score + ' из ' + Object.keys(answers).length;
+    console.log('Результат теста:', score);
+  });
+}
+
+// ========================================
+// 9. ВАЛИДАЦИЯ ФОРМЫ ПОДПИСКИ
+// ========================================
+const emailInput = document.querySelector('#email');
+if (emailInput) {
+  emailInput.addEventListener('blur', function () {
+    clearErrors(this);
+    if (this.value && !validateEmail(this.value)) {
+      showError(this, 'Введите корректный email');
     }
   });
 }
 
-console.log('✅ EduPlatform полностью загружена!');
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    clearErrors(emailInput);
+    if (!emailInput.value.trim()) {
+      showError(emailInput, 'Поле email обязательно');
+      return;
+    }
+    if (!validateEmail(emailInput.value)) {
+      showError(emailInput, 'Введите корректный email');
+      return;
+    }
+    console.log('Форма отправлена:', emailInput.value);
+    emailInput.value = '';
+    alert('Вы успешно подписались на новости!');
+  });
+}
+
+/// ========================================
+// APIIntegrationManager
+// ========================================
+
+import ApiService from './api/apiService.js';
+import LocalStorageService from './storage/localStorage.js';
+import {
+  formatDate,
+  truncateText,
+  createElementFromData,
+} from './utils/dataParser.js';
+import { API_CONFIG, FALLBACK_DATA } from './api/config.js';
+
+class APIIntegrationManager {
+  constructor() {
+    this.localStorage = new LocalStorageService();
+    this.api = null;
+    this.currentData = null;
+    this.apiBlockedUntil = 0; // Время, до которого API заблокировано (Circuit Breaker)
+    this.init();
+  }
+
+  async init() {
+    await this.initializeAPI();
+    this.setupEventListeners();
+    this.loadCachedData();
+    this.renderSavedCourses();
+    this.setupSecurityMeasures();
+
+    // Запуск тестирования (раскомментируйте ТОЛЬКО для демонстрации)
+    /*
+    setTimeout(() => {
+      // Передаем 'this' (сам этот менеджер) третьим аргументом
+      APITester.runAllTests(this.api, this.localStorage, this);
+    }, 1500);
+    */
+  }
+
+  async initializeAPI() {
+    const apiConfig = API_CONFIG.educational;
+    this.api = new ApiService(apiConfig.url, apiConfig.apiKey);
+  }
+
+  setupEventListeners() {
+    const searchInput = document.getElementById('search-input');
+    const searchForm = document.getElementById('search-form');
+    let searchTimeout = null;
+    let lastQuery = ''; // Для отслеживания изменений
+
+    // Единая точка входа для поиска
+    const performSearch = () => {
+      // 1. Очищаем таймер
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+        searchTimeout = null;
+      }
+
+      const query = searchInput ? searchInput.value.trim() : '';
+
+      // 2. Если запрос не изменился — ничего не делаем
+      if (query === lastQuery) return;
+      lastQuery = query;
+
+      // 3. Выполняем поиск
+      this.handleSearch();
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          performSearch();
+        }, 800); // Немного уменьшим задержку для отзывчивости
+      });
+    }
+
+    if (searchForm) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        performSearch();
+      });
+    }
+
+    // Остальные кнопки
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn)
+      refreshBtn.addEventListener('click', () => this.refreshData());
+
+    const clearCacheBtn = document.getElementById('clear-cache-btn');
+    if (clearCacheBtn)
+      clearCacheBtn.addEventListener('click', () => this.clearCache());
+
+    window.addEventListener('online', () => this.refreshData());
+  }
+  async handleSearch() {
+    const searchInput = document.getElementById('search-input');
+    const query = searchInput ? searchInput.value.trim() : '';
+
+    if (!query) {
+      this.showError('Введите поисковый запрос');
+      return;
+    }
+
+    await this.fetchData({ q: query });
+  }
+
+  async fetchData(params = {}) {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+
+    // Проверка Circuit Breaker: если API временно заблокировано
+    if (Date.now() < this.apiBlockedUntil) {
+      console.warn('API временно заблокировано из-за 429 ошибки.');
+      this.updateApiStatus('limit');
+      this.currentData = FALLBACK_DATA.courses;
+      this.renderData(this.currentData);
+      if (loadingIndicator) loadingIndicator.style.display = 'none';
+      return;
+    }
+
+    try {
+      const cacheKey = `api_data_${JSON.stringify(params)}`;
+      const cachedData = this.localStorage.get(cacheKey, null, 3600000);
+
+      if (cachedData && cachedData.length > 0) {
+        this.currentData = cachedData;
+        this.renderData(cachedData);
+        this.showNotification('Данные загружены из кэша');
+        this.updateApiStatus('ok');
+        return;
+      }
+
+      const query = params.q ? params.q.trim() : 'programming';
+      console.log(`→ Поиск книг по запросу: "${query}"`);
+
+      // Запрос к Google Books API
+      const response = await this.api.get('/volumes', {
+        q: query,
+        maxResults: 10,
+        langRestrict: 'ru',
+      });
+
+      this.updateApiStatus('ok');
+
+      let courses = [];
+
+      if (response && response.items && Array.isArray(response.items)) {
+        courses = response.items.map((book) => ({
+          id: book.id,
+          title: book.volumeInfo.title,
+          description: book.volumeInfo.description || 'Описание отсутствует',
+          kind: 'book',
+          authors: book.volumeInfo.authors || ['Неизвестный автор'],
+          thumbnail: book.volumeInfo.imageLinks?.thumbnail || '',
+        }));
+      }
+
+      if (courses.length === 0) {
+        courses = FALLBACK_DATA.courses;
+        this.showNotification(
+          `По запросу "${query}" ничего не найдено. Показаны примеры.`,
+          'warning'
+        );
+      } else {
+        this.showNotification(`Найдено ${courses.length} книг/курсов`);
+      }
+
+      this.currentData = courses;
+      this.localStorage.set(cacheKey, courses);
+      this.localStorage.set('last_api_data', courses);
+
+      this.renderData(courses);
+    } catch (error) {
+      console.error(' Ошибка при запросе к Google Books:', error);
+
+      // Обработка конкретных кодов ошибок
+      if (error.message.includes('429')) {
+        // Блокируем API на 2 минуты при получении 429
+        this.apiBlockedUntil = Date.now() + 120000;
+        this.updateApiStatus('limit');
+
+        this.showNotification(
+          'Слишком много запросов! Google Books временно ограничил доступ. Попробуйте позже или используйте кэш.',
+          'error'
+        );
+      } else if (error.message.includes('503')) {
+        this.updateApiStatus('error', 'Сервис временно перегружен');
+        this.showNotification(
+          'Google Books API временно перегружен. Показаны тестовые данные.',
+          'warning'
+        );
+      } else {
+        this.updateApiStatus('error', 'Проблема с соединением');
+        this.showNotification(
+          'Не удалось загрузить данные. Проверьте соединение с интернетом.',
+          'error'
+        );
+      }
+
+      this.currentData = FALLBACK_DATA.courses;
+      this.renderData(this.currentData);
+    } finally {
+      if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
+  }
+
+  updateApiStatus(status, message = '') {
+    const statusBar = document.getElementById('api-status-bar');
+    if (!statusBar) return;
+
+    statusBar.style.display = 'block';
+
+    if (status === 'ok') {
+      statusBar.style.backgroundColor = '#e8f5e9';
+      statusBar.style.color = '#2e7d32';
+      statusBar.innerHTML = '🟢 API Google Books доступно';
+      // Скрываем через 3 сек, если все ок
+      setTimeout(() => {
+        statusBar.style.display = 'none';
+      }, 3000);
+    } else if (status === 'limit') {
+      statusBar.style.backgroundColor = '#fff3e0';
+      statusBar.style.color = '#ef6c00';
+      statusBar.innerHTML = `🟠 <strong>Лимит запросов исчерпан.</strong> Используется автономный режим. Попробуйте снова через пару минут.`;
+    } else if (status === 'error') {
+      statusBar.style.backgroundColor = '#ffebee';
+      statusBar.style.color = '#c62828';
+      statusBar.innerHTML = `🔴 <strong>Ошибка API:</strong> ${message}. Показаны локальные данные.`;
+    }
+  }
+
+  loadCachedData() {
+    const lastData = this.localStorage.get('last_api_data');
+    if (lastData) {
+      this.currentData = lastData;
+      this.renderData(lastData);
+    } else {
+      this.renderData(FALLBACK_DATA.courses);
+    }
+  }
+
+  renderData(data) {
+    const container = document.getElementById('data-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    let items = Array.isArray(data) ? data : FALLBACK_DATA.courses || [];
+
+    if (items.length > 0) {
+      items.forEach((item) => {
+        const element = this.createDataElement(item);
+        container.appendChild(element);
+      });
+    } else {
+      container.innerHTML = '<p class="no-data">Курсы не найдены</p>';
+    }
+  }
+
+  // ==================== КРАСИВЫЕ КАРТОЧКИ ====================
+
+  createDataElement(item) {
+    const template = `
+      <div class="data-item card api-course-card">
+        <div class="course-image">
+          ${
+            item.thumbnail
+              ? `<img src="${item.thumbnail}" alt="${item.title}" loading="lazy">`
+              : `<div class="no-image"></div>`
+          }
+        </div>
+        <div class="course-content">
+          <h3 class="data-item__title">{{title}}</h3>
+          ${
+            item.authors && item.authors.length
+              ? `<p class="course-authors">Автор: ${item.authors.join(', ')}</p>`
+              : ''
+          }
+          <p class="data-item__description">{{description}}</p>
+          <div class="course-meta">
+            <span class="course-type">{{kind}}</span>
+            <button class="btn-save" data-id="{{id}}">Сохранить в прогресс</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const templateData = {
+      title: item.title || 'Без названия',
+      description: truncateText(
+        item.description || 'Описание отсутствует',
+        140
+      ),
+      kind: item.kind || 'Книга',
+      id: item.id || 'unknown',
+      authors: item.authors ? item.authors.join(', ') : '',
+    };
+
+    const element = createElementFromData(templateData, template);
+
+    const saveBtn = element.querySelector('.btn-save');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => this.saveItem(item));
+    }
+
+    return element;
+  }
+
+  createSavedElement(item) {
+    const template = `
+      <div class="data-item card saved-course-card">
+        <div class="course-image">
+          ${
+            item.thumbnail
+              ? `<img src="${item.thumbnail}" alt="${item.title}" loading="lazy">`
+              : `<div class="no-image"></div>`
+          }
+        </div>
+        <div class="course-content">
+          <h3 class="data-item__title">{{title}}</h3>
+          ${
+            item.authors && item.authors.length
+              ? `<p class="course-authors">Автор: ${item.authors.join(', ')}</p>`
+              : ''
+          }
+          <p class="data-item__description">{{description}}</p>
+          <div class="saved-meta">
+            <span class="saved-date">Сохранён: {{savedDate}}</span>
+            <button class="btn-remove" data-id="{{id}}">Удалить</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const templateData = {
+      title: item.title || 'Без названия',
+      description: truncateText(
+        item.description || 'Описание отсутствует',
+        100
+      ),
+      savedDate: new Date(item.savedAt).toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }),
+      id: item.id,
+    };
+
+    const element = createElementFromData(templateData, template);
+
+    const removeBtn = element.querySelector('.btn-remove');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => this.removeSavedItem(item.id));
+    }
+
+    return element;
+  }
+
+  saveItem(item) {
+    let saved = this.localStorage.get('saved_items', []);
+
+    const exists = saved.some((s) => s.id === item.id);
+    if (exists) {
+      this.showNotification('Этот курс уже сохранён!', 'warning');
+      return;
+    }
+
+    saved.push({
+      ...item,
+      savedAt: new Date().toISOString(),
+      progress: 0,
+    });
+
+    this.localStorage.set('saved_items', saved);
+    this.showNotification('Курс успешно сохранён в прогресс!');
+    this.renderSavedCourses();
+  }
+
+  renderSavedCourses() {
+    const container = document.getElementById('saved-courses-container');
+    if (!container) return;
+
+    const savedItems = this.localStorage.get('saved_items', []);
+
+    container.innerHTML = '';
+
+    if (savedItems.length === 0) {
+      container.innerHTML =
+        '<p class="no-data">Пока нет сохранённых курсов</p>';
+      return;
+    }
+
+    const title = document.createElement('h3');
+    title.textContent = `Сохранённые курсы (${savedItems.length})`;
+    container.appendChild(title);
+
+    savedItems.forEach((item) => {
+      const element = this.createSavedElement(item);
+      container.appendChild(element);
+    });
+  }
+
+  removeSavedItem(id) {
+    let saved = this.localStorage.get('saved_items', []);
+    saved = saved.filter((item) => item.id !== id);
+    this.localStorage.set('saved_items', saved);
+
+    this.showNotification('Курс удалён из сохранённых');
+    this.renderSavedCourses();
+  }
+
+  async refreshData() {
+    this.localStorage.clearExpired();
+    await this.fetchData();
+  }
+
+  clearCache() {
+    const keys = this.localStorage.getAllKeys();
+    keys.forEach((key) => {
+      if (
+        ![
+          'app_settings',
+          'saved_items',
+          'bookmarks',
+          'completedLessons',
+        ].includes(key)
+      ) {
+        this.localStorage.remove(key);
+      }
+    });
+    this.showNotification('Кэш очищен');
+  }
+
+  showError(message) {
+    this.showNotification(message, 'error');
+  }
+
+  showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+      border-radius: 4px; color: white; z-index: 1000;
+      background: ${type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#4CAF50'};
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  }
+
+  // ========================================
+  // ШАГ 5. ОБЕСПЕЧЕНИЕ БЕЗОПАСНОСТИ
+  // ========================================
+  setupSecurityMeasures() {
+    console.log(' Инициализация мер безопасности...');
+    this.checkHttpsUsage();
+    this.restrictHttpMethods();
+    this.secureApiKeyHandling();
+  }
+
+  checkHttpsUsage() {
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      console.warn(' Рекомендуется использовать HTTPS для работы с API');
+    } else {
+      console.log(' HTTPS проверка пройдена');
+    }
+  }
+
+  restrictHttpMethods() {
+    const originalFetch = window.fetch;
+    window.fetch = async (url, options = {}) => {
+      const method = (options.method || 'GET').toUpperCase();
+      if (method !== 'GET' && url.includes('googleapis.com')) {
+        console.error(' Запрещён метод:', method);
+        throw new Error('Only GET allowed');
+      }
+      console.log(`🔒 API Request: ${method} ${url}`);
+      return originalFetch(url, options);
+    };
+  }
+
+  secureApiKeyHandling() {
+    console.log(' Google Books Public API — ключ не требуется');
+  }
+}
+
+// ========================================
+// ЧАСТЬ 6. ТЕСТИРОВАНИЕ И ОБРАБОТКА ОШИБОК
+// ========================================
+
+class APITester {
+  static async testApiConnection(apiService, localStorageService, manager) {
+    console.log(
+      '%c Запуск тестирования API...',
+      'color: blue; font-weight: bold'
+    );
+
+    const testScenarios = [
+      { name: 'Успешный запрос', params: { q: 'javascript' } },
+      { name: 'Запрос с параметрами', params: { q: 'python', maxResults: 5 } },
+      { name: 'Неверный запрос', params: { q: 'абвгдеёжз' } },
+    ];
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (const scenario of testScenarios) {
+      try {
+        await sleep(1500);
+
+        console.log(`\n Тестируем: ${scenario.name}`);
+        const result = await apiService.get('/volumes', scenario.params);
+        console.log('  SUCCESS:', scenario.name);
+      } catch (error) {
+        console.error(`  ERROR в сценарии "${scenario.name}":`, error.message);
+
+        if (error.message.includes('429')) {
+          manager.showNotification(
+            'Тест: Превышен лимит запросов (429)',
+            'warning'
+          );
+        }
+
+        const fallback =
+          localStorageService.get('last_api_data') || FALLBACK_DATA.courses;
+        manager.renderData(fallback);
+
+        if (error.message.includes('429')) break;
+      }
+    }
+  }
+
+  static testOfflineFunctionality(localStorageService) {
+    console.log(
+      '%c Тестирование LocalStorage...',
+      'color: blue; font-weight: bold'
+    );
+    const testData = { test: 'offline_data', message: 'Тест offline' };
+    localStorageService.set('offline_test', testData);
+    const retrieved = localStorageService.get('offline_test');
+
+    if (retrieved && retrieved.test === 'offline_data') {
+      console.log('  PASS: LocalStorage работает корректно');
+    } else {
+      console.log('  FAIL: Проблема с LocalStorage');
+    }
+    localStorageService.remove('offline_test');
+  }
+
+  static runAllTests(apiService, localStorageService, manager) {
+    console.log(
+      '%c ЗАПУСК ПОЛНОГО ТЕСТИРОВАНИЯ',
+      'color: purple; font-weight: bold'
+    );
+
+    this.testApiConnection(apiService, localStorageService, manager);
+    this.testOfflineFunctionality(localStorageService);
+  }
+}
+
+// Запуск приложения
+document.addEventListener('DOMContentLoaded', () => {
+  window.appManager = new APIIntegrationManager();
+});
