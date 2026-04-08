@@ -110,7 +110,6 @@ a {
   margin-top: 1rem;
 }
 
-
 /* Кнопка закладки */
 .bookmark-btn {
   background: none;
@@ -122,26 +121,26 @@ a {
   color: #f59e0b;
   transition: transform 0.15s ease;
 }
- 
+
 .bookmark-btn:hover {
   transform: scale(1.2);
 }
- 
+
 .bookmark-btn--active {
   color: #f59e0b;
 }
- 
+
 /* Урок — строка с текстом и кнопкой закладки */
 .lesson-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
- 
+
 .lesson-item__text {
   flex: 1;
 }
- 
+
 /* Панель закладок */
 .bookmarks-panel {
   margin-top: 1.5rem;
@@ -150,29 +149,29 @@ a {
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: var(--border-radius, 8px);
 }
- 
+
 .bookmarks-panel h3 {
   margin-bottom: 0.75rem;
   font-size: 1rem;
 }
- 
+
 .bookmarks-count {
   color: #6b7280;
   font-weight: normal;
 }
- 
+
 .bookmarks-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
- 
+
 .bookmarks-list__empty {
   color: #9ca3af;
   font-style: italic;
   font-size: 0.9rem;
 }
- 
+
 .bookmarks-list__item {
   display: flex;
   align-items: center;
@@ -181,11 +180,11 @@ a {
   border-bottom: 1px solid var(--color-border, #e2e8f0);
   font-size: 0.9rem;
 }
- 
+
 .bookmarks-list__item:last-child {
   border-bottom: none;
 }
- 
+
 .bookmarks-list__remove {
   background: none;
   border: none;
@@ -194,16 +193,201 @@ a {
   font-size: 0.8rem;
   padding: 2px 6px;
   border-radius: 4px;
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s;
 }
- 
+
 .bookmarks-list__remove:hover {
   color: #ef4444;
   background: #fee2e2;
 }
- 
+
 /* Активная карточка курса */
 .course-card--active {
   outline: 2px solid var(--color-primary, #3b82f6);
   outline-offset: 2px;
+}
+
+/* Контейнер для результатов поиска */
+#data-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Карточка курса */
+.data-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.data-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.data-title {
+  color: #7c3aed;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.data-description {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.data-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.data-meta span {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.btn-save {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background: #5b21b6;
+}
+
+/* Сообщение "нет данных" */
+.no-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #9ca3af;
+  padding: 40px;
+  font-size: 1.1rem;
+}
+
+/* Индикатор загрузки */
+#loading-indicator {
+  text-align: center;
+  padding: 20px;
+  color: #7c3aed;
+  font-size: 1.1rem;
+}
+
+/* ================= API КУРСЫ ================= */
+.api-course-card,
+.saved-course-card {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.api-course-card:hover,
+.saved-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.course-image {
+  width: 120px;
+  height: 160px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.course-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.course-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-authors {
+  color: #666;
+  font-size: 14px;
+  margin: 4px 0 8px 0;
+}
+
+.course-meta,
+.saved-meta {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.course-type {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.btn-save {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-save:hover {
+  background: #45a049;
+}
+
+.btn-remove {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-remove:hover {
+  background: #d32f2f;
 }
