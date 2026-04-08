@@ -312,7 +312,6 @@ class APIIntegrationManager {
     this.localStorage = new LocalStorageService();
     this.api = null;
     this.currentData = null;
-    this.apiBlockedUntil = 0; // Время, до которого API заблокировано (Circuit Breaker)
     this.init();
   }
 
@@ -338,42 +337,13 @@ class APIIntegrationManager {
   }
 
   setupEventListeners() {
-    const searchInput = document.getElementById('search-input');
     const searchForm = document.getElementById('search-form');
-    let searchTimeout = null;
-    let lastQuery = ''; // Для отслеживания изменений
 
-    // Единая точка входа для поиска
-    const performSearch = () => {
-      // 1. Очищаем таймер
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
-        searchTimeout = null;
-      }
-
-      const query = searchInput ? searchInput.value.trim() : '';
-
-      // 2. Если запрос не изменился — ничего не делаем
-      if (query === lastQuery) return;
-      lastQuery = query;
-
-      // 3. Выполняем поиск
-      this.handleSearch();
-    };
-
-    if (searchInput) {
-      searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          performSearch();
-        }, 800); // Немного уменьшим задержку для отзывчивости
-      });
-    }
-
+    // Форма поиска — срабатывает при нажатии на кнопку или Enter
     if (searchForm) {
       searchForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        performSearch();
+        this.handleSearch();
       });
     }
 
@@ -386,7 +356,20 @@ class APIIntegrationManager {
     if (clearCacheBtn)
       clearCacheBtn.addEventListener('click', () => this.clearCache());
 
-    window.addEventListener('online', () => this.refreshData());
+    window.addEventListener('online', () => {
+      this.showNotification(
+        'Связь восстановлена! Синхронизация данных...',
+        'success'
+      );
+      this.refreshData();
+    });
+
+    window.addEventListener('offline', () => {
+      this.showNotification(
+        'Вы перешли в автономный режим. Используются локальные данные.',
+        'warning'
+      );
+    });
   }
   async handleSearch() {
     const searchInput = document.getElementById('search-input');
@@ -401,18 +384,7 @@ class APIIntegrationManager {
   }
 
   async fetchData(params = {}) {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    if (loadingIndicator) loadingIndicator.style.display = 'block';
-
-    // Проверка Circuit Breaker: если API временно заблокировано
-    if (Date.now() < this.apiBlockedUntil) {
-      console.warn('API временно заблокировано из-за 429 ошибки.');
-      this.updateApiStatus('limit');
-      this.currentData = FALLBACK_DATA.courses;
-      this.renderData(this.currentData);
-      if (loadingIndicator) loadingIndicator.style.display = 'none';
-      return;
-    }
+    this.showLoading(true);
 
     try {
       const cacheKey = `api_data_${JSON.stringify(params)}`;
@@ -422,7 +394,6 @@ class APIIntegrationManager {
         this.currentData = cachedData;
         this.renderData(cachedData);
         this.showNotification('Данные загружены из кэша');
-        this.updateApiStatus('ok');
         return;
       }
 
@@ -436,8 +407,6 @@ class APIIntegrationManager {
         langRestrict: 'ru',
       });
 
-      this.updateApiStatus('ok');
-
       let courses = [];
 
       if (response && response.items && Array.isArray(response.items)) {
@@ -448,17 +417,8 @@ class APIIntegrationManager {
           kind: 'book',
           authors: book.volumeInfo.authors || ['Неизвестный автор'],
           thumbnail: book.volumeInfo.imageLinks?.thumbnail || '',
+          progress: 0,
         }));
-      }
-
-      if (courses.length === 0) {
-        courses = FALLBACK_DATA.courses;
-        this.showNotification(
-          `По запросу "${query}" ничего не найдено. Показаны примеры.`,
-          'warning'
-        );
-      } else {
-        this.showNotification(`Найдено ${courses.length} книг/курсов`);
       }
 
       this.currentData = courses;
@@ -466,62 +426,39 @@ class APIIntegrationManager {
       this.localStorage.set('last_api_data', courses);
 
       this.renderData(courses);
+      this.showNotification('Данные успешно загружены');
     } catch (error) {
-      console.error(' Ошибка при запросе к Google Books:', error);
-
-      // Обработка конкретных кодов ошибок
-      if (error.message.includes('429')) {
-        // Блокируем API на 2 минуты при получении 429
-        this.apiBlockedUntil = Date.now() + 120000;
-        this.updateApiStatus('limit');
-
-        this.showNotification(
-          'Слишком много запросов! Google Books временно ограничил доступ. Попробуйте позже или используйте кэш.',
-          'error'
-        );
-      } else if (error.message.includes('503')) {
-        this.updateApiStatus('error', 'Сервис временно перегружен');
-        this.showNotification(
-          'Google Books API временно перегружен. Показаны тестовые данные.',
-          'warning'
-        );
-      } else {
-        this.updateApiStatus('error', 'Проблема с соединением');
-        this.showNotification(
-          'Не удалось загрузить данные. Проверьте соединение с интернетом.',
-          'error'
-        );
-      }
-
-      this.currentData = FALLBACK_DATA.courses;
-      this.renderData(this.currentData);
+      this.handleAPIError(error);
     } finally {
-      if (loadingIndicator) loadingIndicator.style.display = 'none';
+      this.showLoading(false);
     }
   }
 
-  updateApiStatus(status, message = '') {
-    const statusBar = document.getElementById('api-status-bar');
-    if (!statusBar) return;
+  handleAPIError(error) {
+    console.error('API Error:', error);
+    let errorMessage = 'Произошла ошибка при загрузке данных';
 
-    statusBar.style.display = 'block';
+    if (error.message.includes('404')) {
+      errorMessage = 'Запрашиваемые данные не найдены';
+    } else if (error.message.includes('429')) {
+      errorMessage = 'Превышен лимит запросов. Попробуйте позже';
+    } else if (error.message.includes('401')) {
+      errorMessage = 'Ошибка авторизации. Проверьте API ключ';
+    } else if (!navigator.onLine) {
+      errorMessage = 'Отсутствует подключение к интернету';
+    }
 
-    if (status === 'ok') {
-      statusBar.style.backgroundColor = '#e8f5e9';
-      statusBar.style.color = '#2e7d32';
-      statusBar.innerHTML = '🟢 API Google Books доступно';
-      // Скрываем через 3 сек, если все ок
-      setTimeout(() => {
-        statusBar.style.display = 'none';
-      }, 3000);
-    } else if (status === 'limit') {
-      statusBar.style.backgroundColor = '#fff3e0';
-      statusBar.style.color = '#ef6c00';
-      statusBar.innerHTML = `🟠 <strong>Лимит запросов исчерпан.</strong> Используется автономный режим. Попробуйте снова через пару минут.`;
-    } else if (status === 'error') {
-      statusBar.style.backgroundColor = '#ffebee';
-      statusBar.style.color = '#c62828';
-      statusBar.innerHTML = `🔴 <strong>Ошибка API:</strong> ${message}. Показаны локальные данные.`;
+    this.showError(errorMessage);
+    const cachedData = this.localStorage.get('last_api_data');
+    if (cachedData) {
+      this.showNotification('Показаны кэшированные данные');
+    }
+  }
+
+  showLoading(show = true) {
+    const loader = document.getElementById('loading-indicator');
+    if (loader) {
+      loader.style.display = show ? 'block' : 'none';
     }
   }
 
@@ -603,8 +540,11 @@ class APIIntegrationManager {
   }
 
   createSavedElement(item) {
+    const isDone = item.progress === 100;
     const template = `
-      <div class="data-item card saved-course-card">
+      <div class="data-item card saved-course-card ${
+        isDone ? 'course-item--done' : ''
+      }">
         <div class="course-image">
           ${
             item.thumbnail
@@ -613,7 +553,9 @@ class APIIntegrationManager {
           }
         </div>
         <div class="course-content">
-          <h3 class="data-item__title">{{title}}</h3>
+          <h3 class="data-item__title" style="${
+            isDone ? 'text-decoration: line-through;' : ''
+          }">{{title}}</h3>
           ${
             item.authors && item.authors.length
               ? `<p class="course-authors">Автор: ${item.authors.join(', ')}</p>`
@@ -622,7 +564,12 @@ class APIIntegrationManager {
           <p class="data-item__description">{{description}}</p>
           <div class="saved-meta">
             <span class="saved-date">Сохранён: {{savedDate}}</span>
-            <button class="btn-remove" data-id="{{id}}">Удалить</button>
+            <div class="saved-actions">
+              <button class="btn-toggle-done" data-id="{{id}}">
+                ${isDone ? '↩ Вернуть' : '✓ Пройдено'}
+              </button>
+              <button class="btn-remove" data-id="{{id}}">Удалить</button>
+            </div>
           </div>
         </div>
       </div>
@@ -649,7 +596,31 @@ class APIIntegrationManager {
       removeBtn.addEventListener('click', () => this.removeSavedItem(item.id));
     }
 
+    const toggleBtn = element.querySelector('.btn-toggle-done');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () =>
+        this.toggleItemProgress(item.id)
+      );
+    }
+
     return element;
+  }
+
+  toggleItemProgress(id) {
+    let saved = this.localStorage.get('saved_items', []);
+    const itemIndex = saved.findIndex((s) => s.id === id);
+
+    if (itemIndex !== -1) {
+      // Переключаем прогресс между 0 и 100
+      saved[itemIndex].progress = saved[itemIndex].progress === 100 ? 0 : 100;
+      this.localStorage.set('saved_items', saved);
+      this.renderSavedCourses();
+      this.showNotification(
+        saved[itemIndex].progress === 100
+          ? 'Курс отмечен как пройденный'
+          : 'Курс возвращен в изучение'
+      );
+    }
   }
 
   saveItem(item) {
